@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/surrealdb/surrealdb.node"
   },
-  "description": "Node.js bindings for SurrealDB",
+  "description": "Node.js driver for SurrealDB",
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {
