@@ -77,6 +77,41 @@ test('set and and unset', async t => {
 
 })
 
+test('auth', async t => {
+  const db = new Surreal();
+  await db.connect("memory");
+  await db.use({ 'ns': 'test', 'db': 'test' });
+
+  const scope = await db.query(`DEFINE SCOPE user_scope SESSION 5s
+                      SIGNUP (CREATE user SET email = $email, pass = crypto::argon2::generate($pass) )
+                      SIGNIN (SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(pass, $pass))
+                      `);
+  console.log(scope);
+
+  await db.signin({ username: 'root', password: 'root' })
+  console.log('signed in as root');
+
+  const token = await db.signup({
+    namespace: 'namespace',
+    database: 'database',
+    scope: 'user_scope',
+    email: 'john.doe@example.com',
+    password: 'password123'
+  });
+  console.log(token);
+
+  //   // const token2 = await db_ws.signin({
+  //   //     namespace: 'namespace',
+  //   //     database: 'database',
+  //   //     scope: 'user_scope',
+  //   //     email: 'john.doe@example.com',
+  //   //     password: 'password123'
+  //   // });
+  //   // console.log(token2);
+
+  t.pass()
+})
+
 // test('test select method', async t => {
 //   const db = new Surreal();
 //   await db.connect("memory");
@@ -148,7 +183,7 @@ test('set and and unset', async t => {
 
 //   // await db.invalidate();
 
-//   // await db.authenticate(token); 
+//   // await db.authenticate(token);
 
 //   {
 //     const query1 = await db_mem.query("CREATE person:raphael");
