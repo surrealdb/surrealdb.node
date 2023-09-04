@@ -1,0 +1,18 @@
+{
+  "name": "surrealdb.node-android-arm-eabi",
+  "version": "0.0.0",
+  "os": [
+    "android"
+  ],
+  "cpu": [
+    "arm"
+  ],
+  "main": "surrealdb.node.android-arm-eabi.node",
+  "files": [
+    "surrealdb.node.android-arm-eabi.node"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
