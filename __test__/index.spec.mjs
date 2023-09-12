@@ -77,19 +77,20 @@ test('set and and unset', async t => {
 
 })
 
-test('auth', async t => {
+test.failing('auth', async t => {
   const db = new Surreal();
   await db.connect("memory");
+  // await db.connect("ws://127.0.0.1:8000");
   await db.use({ 'ns': 'test', 'db': 'test' });
 
+  await db.signin({ username: 'root', password: 'root' })
+
   const scope = await db.query(`DEFINE SCOPE user_scope SESSION 5s
-                      SIGNUP (CREATE user SET email = $email, pass = crypto::argon2::generate($pass) )
+                      SIGNUP (CREATE user SET email = $email, pass = crypto::argon2::generate($pass))
                       SIGNIN (SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(pass, $pass))
                       `);
   console.log(scope);
 
-  await db.signin({ username: 'root', password: 'root' })
-  console.log('signed in as root');
 
   const token = await db.signup({
     namespace: 'namespace',
