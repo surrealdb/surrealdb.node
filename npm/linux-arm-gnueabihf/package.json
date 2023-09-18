@@ -1,6 +1,6 @@
 {
   "name": "surrealdb.node-linux-arm-gnueabihf",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "os": [
     "linux"
   ],
@@ -11,8 +11,17 @@
   "files": [
     "surrealdb.node.linux-arm-gnueabihf.node"
   ],
-  "license": "MIT",
+  "description": "Node.js driver for SurrealDB",
+  "author": {
+    "name": "Raphael Darley",
+    "email": "raphael.darley@surrealdb.com"
+  },
+  "license": "Apache-2.0",
   "engines": {
     "node": ">= 10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/surrealdb/surrealdb.node"
   }
 }
