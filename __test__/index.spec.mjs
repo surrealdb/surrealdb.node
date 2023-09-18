@@ -8,6 +8,12 @@ test('Connect in-memory SurrealDB instance', async t => {
   t.pass();
 })
 
+test.failing('Connect with rocksdb file', async t => {
+  const db = new Surreal();
+  await db.connect(`rocksdb://${process.cwd()}/test.db`);
+  t.pass();
+})
+
 test('set ns/db', async t => {
   {
     const db = new Surreal();
