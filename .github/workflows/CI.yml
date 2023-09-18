@@ -488,6 +488,8 @@ jobs:
           path: artifacts
       - name: Move artifacts
         run: yarn artifacts
+      - name: Fix npm dirs
+        run: yarn napi create-npm-dir -t .
       - name: List packages
         run: ls -R ./npm
         shell: bash
