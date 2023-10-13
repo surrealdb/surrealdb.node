@@ -180,7 +180,7 @@ impl Surreal {
         let mut response = match bindings {
             None => self.db.query(sql).await.map_err(err_map)?,
             Some(b) => {
-                let b = json(&b.to_string()).unwrap();
+                let b = json(&b.to_string()).map_err(err_map)?;
                 self.db.query(sql).bind(b).await.map_err(err_map)?
             },
         };
@@ -223,7 +223,7 @@ impl Surreal {
 		let response = match data {
             None => self.db.create(resource).await.map_err(err_map)?,
             Some(d) => {
-                let d = json(&d.to_string()).unwrap();
+                let d = json(&d.to_string()).map_err(err_map)?;
                 self.db.create(resource).content(d).await.map_err(err_map)?
             },
         };
@@ -242,7 +242,7 @@ impl Surreal {
 		let response = match data {
             None => update.await.map_err(err_map)?,
             Some(d) => {
-                let d = json(&d.to_string()).unwrap();
+                let d = json(&d.to_string()).map_err(err_map)?;
                 update.content(d).await.map_err(err_map)?
             },
         };
@@ -258,7 +258,7 @@ impl Surreal {
                 .range((range.beg, range.end)),
             Err(_) => self.db.update(Resource::from(resource)),
         };
-		let data = json(&data.to_string()).unwrap();
+		let data = json(&data.to_string()).map_err(err_map)?;
         let response = update.merge(data).await.map_err(err_map)?;
         Ok(to_value(&response.into_json())?)
     }
