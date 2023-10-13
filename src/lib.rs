@@ -18,7 +18,7 @@ use surrealdb::opt::auth::Root;
 use surrealdb::opt::auth::Scope;
 use surrealdb::opt::Resource;
 use surrealdb::opt::{Config, PatchOp};
-use surrealdb::sql::{self, Range};
+use surrealdb::sql::{self, Range, json};
 
 #[napi]
 pub struct Surreal {
@@ -177,9 +177,13 @@ impl Surreal {
 
     #[napi]
     pub async fn query(&self, sql: String, bindings: Option<Value>) -> Result<Value> {
-        let mut response = match bindings {
-            None => self.db.query(sql).await.map_err(err_map)?,
-            Some(b) => self.db.query(sql).bind(b).await.map_err(err_map)?,
+		let bindings = match bindings {
+			Some(b) => json(&b.to_string()).unwrap_or(sql::Value::None),
+			_ => sql::Value::None
+		};
+        let mut response = match bindings.is_object() {
+            false => self.db.query(sql).await.map_err(err_map)?,
+            true => self.db.query(sql).bind(bindings).await.map_err(err_map)?,
         };
 
         let num_statements = response.num_statements();
@@ -217,10 +221,14 @@ impl Surreal {
     #[napi]
     pub async fn create(&self, resource: String, data: Option<Value>) -> Result<Value> {
         let resource = Resource::from(resource);
+		let data = match data {
+			Some(d) => json(&d.to_string()).unwrap_or(sql::Value::None),
+			_ => sql::Value::None
+		};
 
-        let response = match data {
-            Some(d) => self.db.create(resource).content(d).await.map_err(err_map)?,
-            None => self.db.create(resource).await.map_err(err_map)?,
+        let response = match data.is_object() {
+            true => self.db.create(resource).content(data).await.map_err(err_map)?,
+            false => self.db.create(resource).await.map_err(err_map)?,
         };
         Ok(to_value(&response.into_json())?)
     }
@@ -234,9 +242,10 @@ impl Surreal {
                 .range((range.beg, range.end)),
             Err(_) => self.db.update(Resource::from(resource)),
         };
-        let response = match from_value::<Option<Value>>(data)? {
-            Some(data) => update.content(data).await.map_err(err_map)?,
-            None => update.await.map_err(err_map)?,
+		let data = json(&data.to_string()).unwrap_or(sql::Value::None);
+        let response = match data.is_object() {
+            true => update.content(data).await.map_err(err_map)?,
+            false => update.await.map_err(err_map)?,
         };
         Ok(to_value(&response.into_json())?)
     }
@@ -250,7 +259,7 @@ impl Surreal {
                 .range((range.beg, range.end)),
             Err(_) => self.db.update(Resource::from(resource)),
         };
-        let data: Value = from_value(data)?;
+		let data = json(&data.to_string()).unwrap_or(sql::Value::None);
         let response = update.merge(data).await.map_err(err_map)?;
         Ok(to_value(&response.into_json())?)
     }
