@@ -177,13 +177,12 @@ impl Surreal {
 
     #[napi]
     pub async fn query(&self, sql: String, bindings: Option<Value>) -> Result<Value> {
-		let bindings = match bindings {
-			Some(b) => json(&b.to_string()).unwrap_or(sql::Value::None),
-			_ => sql::Value::None
-		};
-        let mut response = match bindings.is_object() {
-            false => self.db.query(sql).await.map_err(err_map)?,
-            true => self.db.query(sql).bind(bindings).await.map_err(err_map)?,
+        let mut response = match bindings {
+            Some(b) => {
+                let b = json(&b.to_string());
+                self.db.query(sql).bind(b).await.map_err(err_map)?
+            },
+            _ => self.db.query(sql).await.map_err(err_map)?,
         };
 
         let num_statements = response.num_statements();
@@ -221,20 +220,18 @@ impl Surreal {
     #[napi]
     pub async fn create(&self, resource: String, data: Option<Value>) -> Result<Value> {
         let resource = Resource::from(resource);
-		let data = match data {
-			Some(d) => json(&d.to_string()).unwrap_or(sql::Value::None),
-			_ => sql::Value::None
-		};
-
-        let response = match data.is_object() {
-            true => self.db.create(resource).content(data).await.map_err(err_map)?,
-            false => self.db.create(resource).await.map_err(err_map)?,
+		let response = match data {
+            Some(d) => {
+                let d = json(&d.to_string());
+                self.db.create(resource).content(d).await.map_err(err_map)?
+            },
+            _ => self.db.create(resource).await.map_err(err_map)?,
         };
         Ok(to_value(&response.into_json())?)
     }
 
     #[napi]
-    pub async fn update(&self, resource: String, data: Value) -> Result<Value> {
+    pub async fn update(&self, resource: String, data: Option<Value>) -> Result<Value> {
         let update = match resource.parse::<Range>() {
             Ok(range) => self
                 .db
@@ -242,10 +239,12 @@ impl Surreal {
                 .range((range.beg, range.end)),
             Err(_) => self.db.update(Resource::from(resource)),
         };
-		let data = json(&data.to_string()).unwrap_or(sql::Value::None);
-        let response = match data.is_object() {
-            true => update.content(data).await.map_err(err_map)?,
-            false => update.await.map_err(err_map)?,
+		let response = match data {
+            Some(d) => {
+                let d = json(&d.to_string());
+                update.content(d).await.map_err(err_map)?
+            },
+            _ => update.await.map_err(err_map)?,
         };
         Ok(to_value(&response.into_json())?)
     }
@@ -259,7 +258,7 @@ impl Surreal {
                 .range((range.beg, range.end)),
             Err(_) => self.db.update(Resource::from(resource)),
         };
-		let data = json(&data.to_string()).unwrap_or(sql::Value::None);
+		let data = json(&data.to_string());
         let response = update.merge(data).await.map_err(err_map)?;
         Ok(to_value(&response.into_json())?)
     }
