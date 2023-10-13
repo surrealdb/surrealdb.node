@@ -16,7 +16,7 @@ export class Surreal {
   query(sql: string, bindings?: any | undefined | null): Promise<any>
   select(resource: string): Promise<any>
   create(resource: string, data?: any | undefined | null): Promise<any>
-  update(resource: string, data: any): Promise<any>
+  update(resource: string, data?: any | undefined | null): Promise<any>
   merge(resource: string, data: any): Promise<any>
   patch(resource: string, data: any): Promise<any>
   delete(resource: string): Promise<any>
