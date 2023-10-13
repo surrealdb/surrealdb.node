@@ -178,11 +178,11 @@ impl Surreal {
     #[napi]
     pub async fn query(&self, sql: String, bindings: Option<Value>) -> Result<Value> {
         let mut response = match bindings {
+            None => self.db.query(sql).await.map_err(err_map)?,
             Some(b) => {
                 let b = json(&b.to_string());
                 self.db.query(sql).bind(b).await.map_err(err_map)?
             },
-            _ => self.db.query(sql).await.map_err(err_map)?,
         };
 
         let num_statements = response.num_statements();
@@ -221,11 +221,11 @@ impl Surreal {
     pub async fn create(&self, resource: String, data: Option<Value>) -> Result<Value> {
         let resource = Resource::from(resource);
 		let response = match data {
+            None => self.db.create(resource).await.map_err(err_map)?,
             Some(d) => {
                 let d = json(&d.to_string());
                 self.db.create(resource).content(d).await.map_err(err_map)?
             },
-            _ => self.db.create(resource).await.map_err(err_map)?,
         };
         Ok(to_value(&response.into_json())?)
     }
@@ -240,11 +240,11 @@ impl Surreal {
             Err(_) => self.db.update(Resource::from(resource)),
         };
 		let response = match data {
+            None => update.await.map_err(err_map)?,
             Some(d) => {
                 let d = json(&d.to_string());
                 update.content(d).await.map_err(err_map)?
             },
-            _ => update.await.map_err(err_map)?,
         };
         Ok(to_value(&response.into_json())?)
     }
