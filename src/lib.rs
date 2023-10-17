@@ -63,10 +63,10 @@ impl Surreal {
     #[napi(js_name = use)]
     pub async fn yuse(&self, value: Value) -> Result<()> {
         let opts: opt::yuse::Use = serde_json::from_value(value)?;
-        match (opts.ns, opts.db) {
-            (Some(ns), Some(db)) => self.db.use_ns(ns).use_db(db).await.map_err(err_map),
-            (Some(ns), None) => self.db.use_ns(ns).await.map_err(err_map),
-            (None, Some(db)) => self.db.use_db(db).await.map_err(err_map),
+        match (opts.namespace, opts.database) {
+            (Some(namespace), Some(database)) => self.db.use_ns(namespace).use_db(database).await.map_err(err_map),
+            (Some(namespace), None) => self.db.use_ns(namespace).await.map_err(err_map),
+            (None, Some(database)) => self.db.use_db(database).await.map_err(err_map),
             (None, None) => Err(napi::Error::from_reason(
                 "Select either namespace or database to use",
             )),
