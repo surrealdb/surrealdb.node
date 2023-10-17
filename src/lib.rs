@@ -152,13 +152,13 @@ impl Surreal {
                 username,
                 password,
             }),
-            Credentials::Root { username, password } => {
-                self.db
-                    .signin(Root { username, password })
-                    .await
-                    .map_err(err_map)?;
-                return Ok(Value::Null);
-            }
+            Credentials::Root {
+				username,
+				password
+			} => self.db.signin(Root {
+				username,
+				password
+			}),
         };
         Ok(to_value(&signin.await.map_err(err_map)?)?)
     }
