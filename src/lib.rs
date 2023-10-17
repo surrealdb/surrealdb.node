@@ -170,9 +170,9 @@ impl Surreal {
     }
 
     #[napi]
-    pub async fn authenticate(&self, token: String) -> Result<()> {
+    pub async fn authenticate(&self, token: String) -> Result<Value> {
         self.db.authenticate(token).await.map_err(err_map)?;
-        Ok(())
+        Ok(Value::Bool(true))
     }
 
     #[napi]
