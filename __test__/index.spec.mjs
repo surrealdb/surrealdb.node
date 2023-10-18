@@ -12,19 +12,19 @@ test('set ns/db', async t => {
   {
     const db = new Surreal();
     await db.connect("memory");
-    await db.use({ 'ns': 'test' })
+    await db.use({ 'namespace': 'test' })
   }
 
   {
     const db = new Surreal();
     await db.connect("memory");
-    await db.use({ 'db': 'test' })
+    await db.use({ 'database': 'test' })
   }
 
   {
     const db = new Surreal();
     await db.connect("memory");
-    await db.use({ 'ns': 'test', 'db': 'test' })
+    await db.use({ 'namespace': 'test', 'database': 'test' })
   }
 
   t.pass();
@@ -33,7 +33,7 @@ test('set ns/db', async t => {
 test('test query method', async t => {
   const db = new Surreal();
   await db.connect("memory");
-  await db.use({ 'ns': 'test', 'db': 'test' })
+  await db.use({ 'namespace': 'test', 'database': 'test' })
 
   {
     const res = await db.query('SELECT * FROM person');
@@ -58,7 +58,7 @@ test('test query method', async t => {
 test('set and and unset', async t => {
   const db = new Surreal();
   await db.connect("memory");
-  await db.use({ 'ns': 'test', 'db': 'test' });
+  await db.use({ 'namespace': 'test', 'database': 'test' });
 
   const data = { 'first': 'Tobie', 'last': 'Morgan Hitchcock' };
 
@@ -81,7 +81,7 @@ test.failing('auth', async t => {
   const db = new Surreal();
   await db.connect("memory");
   // await db.connect("ws://127.0.0.1:8000");
-  await db.use({ 'ns': 'test', 'db': 'test' });
+  await db.use({ 'namespace': 'test', 'database': 'test' });
 
   await db.signin({ username: 'root', password: 'root' })
 
@@ -113,27 +113,28 @@ test.failing('auth', async t => {
   t.pass()
 })
 
-// test('test select method', async t => {
-//   const db = new Surreal();
-//   await db.connect("memory");
-//   await db.use({ 'ns': 'test', 'db': 'test' });
+test('test select method', async t => {
+  const db = new Surreal();
+  await db.connect("memory");
+  await db.use({ 'namespace': 'test', 'database': 'test' });
 
-//   const jason = { 'id': 'person:jason' };
-//   const john = { 'id': 'person:john' };
-//   const jaime = { 'id': 'person:jaime' };
-//   const people = [jason, john, jaime];
+  const jason = { 'id': 'person:jason' };
+  const john = { 'id': 'person:john' };
+  const jaime = { 'id': 'person:jaime' };
+  const people = [jaime, jason, john];
 
-//   await db.create(jason.id);
-//   await db.create(john.id);
-//   await db.create(jaime.id);
+  await db.create(jason.id);
+  await db.create(john.id);
+  await db.create(jaime.id);
 
-//   {
-//     const res = await db.select('person');
-//     console.log(res);
-//     t.is(new Set(res), new Set(people));
-//   }
+  {
+    const res = await db.select('person');
+    t.deepEqual(new Set(res), new Set(people));
+    const person = await db.select('person:jason');
+    t.deepEqual(person, jason);
+  }
 
-// })
+})
 
 // test('examples', async t => {
 

@@ -12,7 +12,7 @@ export class Surreal {
   signup(credentials: any): Promise<any>
   signin(credentials: any): Promise<any>
   invalidate(): Promise<void>
-  authenticate(token: string): Promise<void>
+  authenticate(token: string): Promise<any>
   query(sql: string, bindings?: any | undefined | null): Promise<any>
   select(resource: string): Promise<any>
   create(resource: string, data?: any | undefined | null): Promise<any>
