@@ -1,6 +1,8 @@
+mod array_response;
 mod error;
 mod opt;
 
+use array_response::array_response;
 use error::err_map;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -34,8 +36,8 @@ impl Surreal {
         }
     }
 
-    #[napi]
-    pub async fn connect(&self, endpoint: String, opts: Option<Value>) -> Result<()> {
+	#[napi]
+    pub async fn connect(&self, endpoint: String, #[napi(ts_arg_type = "Record<string, unknown>")] opts: Option<Value>) -> Result<()> {
         let opts: Option<Options> = match opts {
             Some(o) => serde_json::from_value(o)?,
             None => None,
@@ -61,12 +63,12 @@ impl Surreal {
     }
 
     #[napi(js_name = use)]
-    pub async fn yuse(&self, value: Value) -> Result<()> {
+    pub async fn yuse(&self, #[napi(ts_arg_type = "{ namespace?: string; database?: string }")] value: Value) -> Result<()> {
         let opts: opt::yuse::Use = serde_json::from_value(value)?;
-        match (opts.ns, opts.db) {
-            (Some(ns), Some(db)) => self.db.use_ns(ns).use_db(db).await.map_err(err_map),
-            (Some(ns), None) => self.db.use_ns(ns).await.map_err(err_map),
-            (None, Some(db)) => self.db.use_db(db).await.map_err(err_map),
+        match (opts.namespace, opts.database) {
+            (Some(namespace), Some(database)) => self.db.use_ns(namespace).use_db(database).await.map_err(err_map),
+            (Some(namespace), None) => self.db.use_ns(namespace).await.map_err(err_map),
+            (None, Some(database)) => self.db.use_db(database).await.map_err(err_map),
             (None, None) => Err(napi::Error::from_reason(
                 "Select either namespace or database to use",
             )),
@@ -74,7 +76,7 @@ impl Surreal {
     }
 
     #[napi]
-    pub async fn set(&self, key: String, value: Value) -> Result<()> {
+    pub async fn set(&self, key: String, #[napi(ts_arg_type = "unknown")] value: Value) -> Result<()> {
         self.db.set(key, value).await.map_err(err_map)?;
         Ok(())
     }
@@ -85,8 +87,8 @@ impl Surreal {
         Ok(())
     }
 
-    #[napi]
-    pub async fn signup(&self, credentials: Value) -> Result<Value> {
+    #[napi(ts_return_type="Promise<string>")]
+    pub async fn signup(&self, #[napi(ts_arg_type = "{ namespace: string; database: string; scope: string; [k: string]: unknown }")] credentials: Value) -> Result<Value> {
         match from_value::<Credentials>(credentials)? {
             Credentials::Scope {
                 namespace,
@@ -118,8 +120,8 @@ impl Surreal {
         }
     }
 
-    #[napi]
-    pub async fn signin(&self, credentials: Value) -> Result<Value> {
+    #[napi(ts_return_type="Promise<string>")]
+    pub async fn signin(&self, #[napi(ts_arg_type = "{ username: string; password: string } | { namespace: string; username: string; password: string } | { namespace: string; database: string; username: string; password: string } | { namespace: string; database: string; scope: string; [k: string]: unknown }")] credentials: Value) -> Result<Value> {
         let signin = match &from_value::<Credentials>(credentials)? {
             Credentials::Scope {
                 namespace,
@@ -152,13 +154,13 @@ impl Surreal {
                 username,
                 password,
             }),
-            Credentials::Root { username, password } => {
-                self.db
-                    .signin(Root { username, password })
-                    .await
-                    .map_err(err_map)?;
-                return Ok(Value::Null);
-            }
+            Credentials::Root {
+				username,
+				password
+			} => self.db.signin(Root {
+				username,
+				password
+			}),
         };
         Ok(to_value(&signin.await.map_err(err_map)?)?)
     }
@@ -169,14 +171,14 @@ impl Surreal {
         Ok(())
     }
 
-    #[napi]
-    pub async fn authenticate(&self, token: String) -> Result<()> {
+    #[napi(ts_return_type="Promise<boolean>")]
+    pub async fn authenticate(&self, token: String) -> Result<Value> {
         self.db.authenticate(token).await.map_err(err_map)?;
-        Ok(())
+        Ok(Value::Bool(true))
     }
 
-    #[napi]
-    pub async fn query(&self, sql: String, bindings: Option<Value>) -> Result<Value> {
+    #[napi(ts_return_type="Promise<unknown[]>")]
+    pub async fn query(&self, sql: String, #[napi(ts_arg_type = "Record<string, unknown>")] bindings: Option<Value>) -> Result<Value> {
         let mut response = match bindings {
             None => self.db.query(sql).await.map_err(err_map)?,
             Some(b) => {
@@ -187,19 +189,17 @@ impl Surreal {
 
         let num_statements = response.num_statements();
 
-        let response: sql::Value = if num_statements > 1 {
+        let response: sql::Value = {
             let mut output = Vec::<sql::Value>::with_capacity(num_statements);
             for index in 0..num_statements {
                 output.push(response.take(index).map_err(err_map)?);
             }
             sql::Value::from(output)
-        } else {
-            response.take(0).map_err(err_map)?
         };
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
+    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
     pub async fn select(&self, resource: String) -> Result<Value> {
         let response = match resource.parse::<Range>() {
             Ok(range) => self
@@ -214,11 +214,12 @@ impl Surreal {
                 .await
                 .map_err(err_map)?,
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
-    pub async fn create(&self, resource: String, data: Option<Value>) -> Result<Value> {
+    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
+    pub async fn create(&self, resource: String, #[napi(ts_arg_type = "Record<string, unknown>")] data: Option<Value>) -> Result<Value> {
         let resource = Resource::from(resource);
 		let response = match data {
             None => self.db.create(resource).await.map_err(err_map)?,
@@ -227,11 +228,12 @@ impl Surreal {
                 self.db.create(resource).content(d).await.map_err(err_map)?
             },
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
-    pub async fn update(&self, resource: String, data: Option<Value>) -> Result<Value> {
+    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
+    pub async fn update(&self, resource: String, #[napi(ts_arg_type = "Record<string, unknown>")] data: Option<Value>) -> Result<Value> {
         let update = match resource.parse::<Range>() {
             Ok(range) => self
                 .db
@@ -246,11 +248,12 @@ impl Surreal {
                 update.content(d).await.map_err(err_map)?
             },
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
-    pub async fn merge(&self, resource: String, data: Value) -> Result<Value> {
+    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
+    pub async fn merge(&self, resource: String, #[napi(ts_arg_type = "Record<string, unknown>")] data: Value) -> Result<Value> {
         let update = match resource.parse::<Range>() {
             Ok(range) => self
                 .db
@@ -260,11 +263,12 @@ impl Surreal {
         };
 		let data = json(&data.to_string()).map_err(err_map)?;
         let response = update.merge(data).await.map_err(err_map)?;
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
-    pub async fn patch(&self, resource: String, data: Value) -> Result<Value> {
+    #[napi(ts_return_type="Promise<unknown[]>")]
+    pub async fn patch(&self, resource: String, #[napi(ts_arg_type = "unknown[]")] data: Value) -> Result<Value> {
         // Prepare the update request
         let update = match resource.parse::<Range>() {
             Ok(range) => self
@@ -298,10 +302,11 @@ impl Surreal {
         }
         // Execute the update statement
         let response = patch.await.map_err(err_map)?;
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
+    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
     pub async fn delete(&self, resource: String) -> Result<Value> {
         let response = match resource.parse::<Range>() {
             Ok(range) => self
@@ -316,10 +321,11 @@ impl Surreal {
                 .await
                 .map_err(err_map)?,
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
-    #[napi]
+    #[napi(ts_return_type="Promise<string>")]
     pub async fn version(&self) -> Result<Value> {
         let response = self.db.version().await.map_err(err_map)?;
         Ok(to_value(&response)?)
