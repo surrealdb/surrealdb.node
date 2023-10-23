@@ -36,19 +36,19 @@ test('test query method', async t => {
   await db.use({ 'namespace': 'test', 'database': 'test' })
 
   {
-    const res = await db.query('SELECT * FROM person');
+    const [res] = await db.query('SELECT * FROM person');
     t.deepEqual(res, []);
   }
 
 
   {
-    const res = await db.query('CREATE |foo:100|');
-    t.is(res.length, 100);
+    const [res] = await db.query('CREATE |foo:100|');
+	t.is(res.length, 100);
   }
 
   {
     const data = { 'first_name': 'Tobie', 'projects': ['SurrealDB'] };
-    const res = await db.query('CREATE person:tobie content $data', { 'data': data });
+    const [res] = await db.query('CREATE person:tobie content $data', { 'data': data });
     data.id = 'person:tobie';
     t.deepEqual(res, [data]);
   }
@@ -64,14 +64,14 @@ test('set and and unset', async t => {
 
   await db.set('name', data)
   {
-    const res = await db.query("RETURN $name");
+    const [res] = await db.query("RETURN $name");
     t.deepEqual(res, [data]);
   }
 
   await db.unset('name');
 
   {
-    const res = await db.query("RETURN $name");
+    const [res] = await db.query("RETURN $name");
     t.deepEqual(res, []);
   }
 
@@ -131,7 +131,7 @@ test('test select method', async t => {
     const res = await db.select('person');
     t.deepEqual(new Set(res), new Set(people));
     const person = await db.select('person:jason');
-    t.deepEqual(person, jason);
+    t.deepEqual(person, [jason]);
   }
 
 })

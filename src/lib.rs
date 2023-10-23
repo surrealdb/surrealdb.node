@@ -1,6 +1,8 @@
+mod array_response;
 mod error;
 mod opt;
 
+use array_response::array_response;
 use error::err_map;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -187,14 +189,12 @@ impl Surreal {
 
         let num_statements = response.num_statements();
 
-        let response: sql::Value = if num_statements > 1 {
+        let response: sql::Value = {
             let mut output = Vec::<sql::Value>::with_capacity(num_statements);
             for index in 0..num_statements {
                 output.push(response.take(index).map_err(err_map)?);
             }
             sql::Value::from(output)
-        } else {
-            response.take(0).map_err(err_map)?
         };
         Ok(to_value(&response.into_json())?)
     }
@@ -214,6 +214,7 @@ impl Surreal {
                 .await
                 .map_err(err_map)?,
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
@@ -227,6 +228,7 @@ impl Surreal {
                 self.db.create(resource).content(d).await.map_err(err_map)?
             },
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
@@ -246,6 +248,7 @@ impl Surreal {
                 update.content(d).await.map_err(err_map)?
             },
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
@@ -260,6 +263,7 @@ impl Surreal {
         };
 		let data = json(&data.to_string()).map_err(err_map)?;
         let response = update.merge(data).await.map_err(err_map)?;
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
@@ -298,6 +302,7 @@ impl Surreal {
         }
         // Execute the update statement
         let response = patch.await.map_err(err_map)?;
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
@@ -316,6 +321,7 @@ impl Surreal {
                 .await
                 .map_err(err_map)?,
         };
+		let response = array_response(response);
         Ok(to_value(&response.into_json())?)
     }
 
