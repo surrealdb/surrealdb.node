@@ -5,21 +5,21 @@
 
 export class Surreal {
   constructor()
-  connect(endpoint: string, opts?: any | undefined | null): Promise<void>
-  use(value: any): Promise<void>
-  set(key: string, value: any): Promise<void>
+  connect(endpoint: string, opts?: Record<string, unknown>): Promise<void>
+  use(value: { namespace?: string; database?: string }): Promise<void>
+  set(key: string, value: unknown): Promise<void>
   unset(key: string): Promise<void>
-  signup(credentials: any): Promise<any>
-  signin(credentials: any): Promise<any>
+  signup(credentials: { namespace: string; database: string; scope: string; [k: string]: unknown }): Promise<string>
+  signin(credentials: { username: string; password: string } | { namespace: string; username: string; password: string } | { namespace: string; database: string; username: string; password: string } | { namespace: string; database: string; scope: string; [k: string]: unknown }): Promise<string>
   invalidate(): Promise<void>
-  authenticate(token: string): Promise<any>
-  query(sql: string, bindings?: any | undefined | null): Promise<any>
-  select(resource: string): Promise<any>
-  create(resource: string, data?: any | undefined | null): Promise<any>
-  update(resource: string, data?: any | undefined | null): Promise<any>
-  merge(resource: string, data: any): Promise<any>
-  patch(resource: string, data: any): Promise<any>
-  delete(resource: string): Promise<any>
-  version(): Promise<any>
+  authenticate(token: string): Promise<boolean>
+  query(sql: string, bindings?: Record<string, unknown>): Promise<unknown[]>
+  select(resource: string): Promise<{ id: string; [k: string]: unknown }[]>
+  create(resource: string, data?: Record<string, unknown>): Promise<{ id: string; [k: string]: unknown }[]>
+  update(resource: string, data?: Record<string, unknown>): Promise<{ id: string; [k: string]: unknown }[]>
+  merge(resource: string, data: Record<string, unknown>): Promise<{ id: string; [k: string]: unknown }[]>
+  patch(resource: string, data: unknown[]): Promise<unknown[]>
+  delete(resource: string): Promise<{ id: string; [k: string]: unknown }[]>
+  version(): Promise<string>
   health(): Promise<void>
 }
