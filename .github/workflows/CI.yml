@@ -183,8 +183,8 @@ jobs:
           memory: 3G
           run: |
             sudo pkg install -y -f curl node libnghttp2 npm yarn
-            sudo curl https://sh.rustup.rs -sSf --output rustup.sh
-            sudo sh rustup.sh -y --profile minimal --default-toolchain beta
+            curl https://sh.rustup.rs -sSf --output rustup.sh
+            sh rustup.sh -y --profile minimal --default-toolchain beta
             export PATH="/usr/local/cargo/bin:$PATH"
             source "$HOME/.cargo/env"
             echo "~~~~ rustc --version ~~~~"
