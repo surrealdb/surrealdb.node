@@ -1,6 +1,6 @@
 [package]
 name = "surrealdb_node"
-version = "0.2.0"
+version = "0.4.0"
 edition = "2021"
 
 [lib]
@@ -12,7 +12,7 @@ napi = { version = "2", features = ["async", "serde-json"] }
 napi-derive = "2"
 serde = "1.0.188"
 serde_json = "1.0.105"
-surrealdb = { version = "1.0.0-beta.11", features = ["kv-mem"] }
+surrealdb = { version = "1.0.0", features = ["kv-mem"] }
 
 [build-dependencies]
 napi-build = "2.0.1"
@@ -24,12 +24,12 @@ rocksdb = ["surrealdb/kv-rocksdb"]
 lto = true
 
 [target.x86_64-pc-windows-msvc.dependencies]
-surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }
+surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
 [target.x86_64-unknown-linux-gnu.dependencies]
-surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }
+surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
 [target.aarch64-linux-android.dependencies]
-surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }
+surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
 [target.armv7-linux-androideabi.dependencies]
-surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }
+surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
 # [target.aarch64-apple-darwin.dependencies]
 # surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }
