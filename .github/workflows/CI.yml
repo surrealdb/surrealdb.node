@@ -179,7 +179,7 @@ jobs:
           operating_system: freebsd
           version: '13.2'
           environment_variables: DEBUG RUSTUP_HOME CARGO_HOME RUSTUP_IO_THREADS
-          shell: sh
+          shell: bash
           memory: 3G
           run: |
             pkg install -y -f curl node libnghttp2 npm yarn
