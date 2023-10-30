@@ -186,6 +186,7 @@ jobs:
             sudo curl https://sh.rustup.rs -sSf --output rustup.sh
             sudo sh rustup.sh -y --profile minimal --default-toolchain beta
             export PATH="/usr/local/cargo/bin:$PATH"
+            source "$HOME/.cargo/env"
             echo "~~~~ rustc --version ~~~~"
             rustc --version
             echo "~~~~ node -v ~~~~"
