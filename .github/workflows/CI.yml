@@ -172,27 +172,26 @@ jobs:
         timeout-minutes: 40
         env:
           DEBUG: napi:*
-          RUSTUP_HOME: /usr/local/rustup
-          CARGO_HOME: /usr/local/cargo
           RUSTUP_IO_THREADS: 1
         with:
           operating_system: freebsd
           version: '13.2'
-          environment_variables: DEBUG RUSTUP_HOME CARGO_HOME RUSTUP_IO_THREADS
+          memory: 13G
+          cpu_count: 3
+          environment_variables: DEBUG RUSTUP_IO_THREADS
           shell: bash
-          memory: 3G
           run: |
-            sudo pkg install -y -f curl node libnghttp2 npm yarn
-            sudo curl https://sh.rustup.rs -sSf --output rustup.sh
-            sudo sh rustup.sh -y --profile minimal --default-toolchain beta
-            export PATH="/usr/local/cargo/bin:$PATH"
+            sudo pkg install -y -f curl node libnghttp2 npm
+            sudo npm install -g yarn --ignore-scripts
+            curl https://sh.rustup.rs -sSf --output rustup.sh
+            sh rustup.sh -y --profile minimal --default-toolchain beta
+            source "$HOME/.cargo/env"
             echo "~~~~ rustc --version ~~~~"
             rustc --version
             echo "~~~~ node -v ~~~~"
             node -v
             echo "~~~~ yarn --version ~~~~"
             yarn --version
-            export PATH="/usr/local/cargo/bin:$PATH"
             pwd
             ls -lah
             whoami
