@@ -24,53 +24,62 @@ View the [features](https://surrealdb.com/features), the latest [releases](https
 
 ```js
 // import as ES module or common JS
-import {Surreal} from 'surrealdb.node';
-const {Surreal} = require('surrealdb.node');
+const { default: Surreal } = require('surrealdb.node');
 
 const db = new Surreal();
 
-// use in-memory database
-await db.connect('memory');
-// connect to database server
-await db.connect('ws://127.0.0.1:8000');
-// use rocksdb file
-await db.connect(`rocksdb://${process.cwd()}/test.db`);
+async function main() {
+	try {
 
-// Select a specific namespace / database
-await db.use({ ns: "test", db: "test" });
+		// Use any of these 3 connect methods to connect to the database
+		// 1.Connect to the database
+		await db.connect('http://127.0.0.1:8000/rpc');
+		// 2. Connect to database server
+		await db.connect('ws://127.0.0.1:8000');
+		// 3. Connect via rocksdb file
+		await db.connect(`rocksdb://${process.cwd()}/test.db`);
 
-// Create a new person with a random id
-let created = await db.create("person", {
-    title: "Founder & CEO",
-    name: {
-        first: "Tobie",
-        last: "Morgan Hitchcock",
-    },
-    marketing: true,
-    identifier: Math.random().toString(36).substr(2, 10),
-});
+		// Signin as a namespace, database, or root user
+		await db.signin({
+			username: 'root',
+			password: 'root',
+		});
 
-// Update a person record with a specific id
-let updated = await db.merge("person:jaime", {
-    marketing: true
-});
+		// Select a specific namespace / database
+		await db.use({ namespace: 'test', database: 'test' });
 
-// Select all people records
-let people = await db.select("person");
+		// Create a new person with a random id
+		let created = await db.create('person', {
+			title: 'Founder & CEO',
+			name: {
+				first: 'Tobie',
+				last: 'Morgan Hitchcock',
+			},
+			marketing: true,
+			identifier: Math.random().toString(36).slice(2, 12),
+		});
 
-// Perform a custom advanced query
-let groups = await db.query(
-    "SELECT marketing, count() FROM type::table($table) GROUP BY marketing",
-    {
-        table: "person",
-    },
-);
+		// Update a person record with a specific id
+		let updated = await db.merge('person:jaime', {
+			marketing: true,
+		});
 
-// Delete all people upto but not including Jaime
-let deleted = await db.delete("person:..jaime");
+		// Select all people records
+		let people = await db.select('person');
 
-// Delete all people
-await db.delete("person");
+		// Perform a custom advanced query
+		let groups = await db.query(
+			'SELECT marketing, count() FROM type::table($tb) GROUP BY marketing',
+			{
+				tb: 'person',
+			}
+		);
+	} catch (e) {
+		console.error('ERROR', e);
+	}
+}
+
+main();
 ```
 
 # Supported targets
