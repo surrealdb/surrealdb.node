@@ -6,6 +6,7 @@
 export class Surreal {
   constructor()
   connect(endpoint: string, opts?: Record<string, unknown>): Promise<void>
+  close(): Promise<void>
   use(value: { namespace?: string; database?: string }): Promise<void>
   set(key: string, value: unknown): Promise<void>
   unset(key: string): Promise<void>
