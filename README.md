@@ -1,99 +1,54 @@
+<br>
+
+<p align="center">
+    <img width=120 src="https://raw.githubusercontent.com/surrealdb/icons/main/surreal.svg" />
+    &nbsp;
+    <img width=120 src="https://raw.githubusercontent.com/surrealdb/icons/main/nodejs.svg" />
+</p>
+
+<h3 align="center">A Node.js engine for the SurrealDB JavaScript SDK.</h3>
+
+<br>
+
+<p align="center">
+    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/badge/status-dev-ff00bb.svg?style=flat-square"></a>
+    &nbsp;
+    <a href="https://surrealdb.com/docs/integration/libraries/javascript"><img src="https://img.shields.io/badge/docs-view-44cc11.svg?style=flat-square"></a>
+    &nbsp;
+    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/npm/v/surrealdb.node?style=flat-square"></a>
+</p>
+
+<p align="center">
+    <a href="https://surrealdb.com/discord"><img src="https://img.shields.io/discord/902568124350599239?label=discord&style=flat-square&color=5a66f6"></a>
+    &nbsp;
+    <a href="https://twitter.com/surrealdb"><img src="https://img.shields.io/badge/twitter-follow_us-1d9bf0.svg?style=flat-square"></a>
+    &nbsp;
+    <a href="https://www.linkedin.com/company/surrealdb/"><img src="https://img.shields.io/badge/linkedin-connect_with_us-0a66c2.svg?style=flat-square"></a>
+    &nbsp;
+    <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img src="https://img.shields.io/badge/youtube-subscribe-fc1c1c.svg?style=flat-square"></a>
+</p>
+
 # surrealdb.node
 
-The official SurrealDB library for Node.js.
+A Node.js engine for the SurrealDB JavaScript SDK.
 
-[![](https://img.shields.io/badge/status-beta-ff00bb.svg?style=flat-square)](https://github.com/surrealdb/surrealdb.node) [![](https://img.shields.io/badge/docs-view-44cc11.svg?style=flat-square)](https://surrealdb.com/docs/integration/libraries/nodejs) [![](https://img.shields.io/badge/license-Apache_License_2.0-00bfff.svg?style=flat-square)](https://github.com/surrealdb/surrealdb.node)
+This library is a plugin for the SurrealDB JavaScript SDK, which can be used to run SurrealDB as an embedded database within a Node.js server side environment. It enables SurrealDB to be run in-memory, or to persist data by running on top of SurrealKV. It allows for a consistent JavaScript and TypeScript API when using the `surrealdb.js` library by adding support for embedded storage engines (`memory`, `surrealkv`) alongside the remote connection protocols (`http`, `https`, `ws`, `wss`).
 
-
-<h2><img height="20" src="https://github.com/surrealdb/surrealdb/raw/main/img/whatissurreal.svg?raw=true">&nbsp;&nbsp;What is SurrealDB?</h2>
-
-SurrealDB is an end-to-end cloud-native database designed for modern applications, including web, mobile, serverless, Jamstack, backend, and traditional applications. With SurrealDB, you can simplify your database and API infrastructure, reduce development time, and build secure, performant apps quickly and cost-effectively.
-
-**Key features of SurrealDB include:**
-
-- **Reduces development time**: SurrealDB simplifies your database and API stack by removing the need for most server-side components, allowing you to build secure, performant apps faster and cheaper.
-- **Real-time collaborative API backend service:** SurrealDB functions as both a database and an API backend service, enabling real-time collaboration.
-- **Support for multiple querying languages:** SurrealDB supports SQL querying from client devices, GraphQL, ACID transactions, WebSocket connections, structured and unstructured data, graph querying, full-text indexing, and geospatial querying.
-- **Granular access control**: SurrealDB provides row-level permissions-based access control, giving you the ability to manage data access with precision.
-
-
-View the [features](https://surrealdb.com/features), the latest [releases](https://surrealdb.com/releases), the product [roadmap](https://surrealdb.com/roadmap), and [documentation](https://surrealdb.com/docs).
-
-
-<h2><img height="20" src="https://github.com/surrealdb/surrealdb/blob/main/img/gettingstarted.svg?raw=true">&nbsp;&nbsp;Getting started</h2>
+## Example usage
 
 ```js
-// import as ES module or common JS
-const { default: Surreal } = require('surrealdb.node');
+import { Surreal } from 'surrealdb.js';
+import { surrealdbNodeEngines } from 'surrealdb.node';
 
-const db = new Surreal();
+// Enable the WebAssembly engines
+const db = new Surreal({
+    engines: surrealdbNodeEngines(),
+});
 
-async function main() {
-	try {
+// Now we can start SurrealDB as an in-memory database
+await db.connect("mem://");
+// Or we can start a persisted SurrealKV database
+await db.connect("surrealkv://demo");
 
-		// Use any of these 3 connect methods to connect to the database
-		// 1.Connect to the database
-		await db.connect('http://127.0.0.1:8000/rpc');
-		// 2. Connect to database server
-		await db.connect('ws://127.0.0.1:8000');
-		// 3. Connect via rocksdb file
-		await db.connect(`rocksdb://${process.cwd()}/test.db`);
-
-		// Signin as a namespace, database, or root user
-		await db.signin({
-			username: 'root',
-			password: 'root',
-		});
-
-		// Select a specific namespace / database
-		await db.use({ namespace: 'test', database: 'test' });
-
-		// Create a new person with a random id
-		let created = await db.create('person', {
-			title: 'Founder & CEO',
-			name: {
-				first: 'Tobie',
-				last: 'Morgan Hitchcock',
-			},
-			marketing: true,
-			identifier: Math.random().toString(36).slice(2, 12),
-		});
-
-		// Update a person record with a specific id
-		let updated = await db.merge('person:jaime', {
-			marketing: true,
-		});
-
-		// Select all people records
-		let people = await db.select('person');
-
-		// Perform a custom advanced query
-		let groups = await db.query(
-			'SELECT marketing, count() FROM type::table($tb) GROUP BY marketing',
-			{
-				tb: 'person',
-			}
-		);
-	} catch (e) {
-		console.error('ERROR', e);
-	}
-}
-
-main();
+// Now use the JavaScript SDK as normal.
 ```
-
-# Supported targets
-
-| Tripple                       | supported | rocksdb support |           reason |
-| ----------------------------- | :-------: | :-------------: | ---------------: |
-| aarch64-apple-darwin          |     ✓     |        x        |                  |
-| aarch64-linux-android         |     ✓     |        ✓        |                  |
-| aarch64-unknown-linux-gnu     |     ✓     |        ✓        |                  |
-| aarch64-unknown-linux-musl    |     ✓     |        x        |                  |
-| aarch64-pc-windows-msvc       |     x     |        x        | ring build fails |
-| armv7-unknown-linux-gnueabihf |     x     |        x        |  psm build fails |
-| x86_64-unknown-linux-musl     |     ✓     |        x        |                  |
-| x86_64-unknown-freebsd        |     ✓     |        x        |                  |
-| i686-pc-windows-msvc          |     ✓     |        ✓        |                  |
-| armv7-linux-androideabi       |     ✓     |        ✓        |                  |
-| universal-apple-darwi         |     ✓     |        x        |                  |
