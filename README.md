@@ -32,7 +32,9 @@
 
 A Node.js engine for the SurrealDB JavaScript SDK.
 
-This library is a plugin for the SurrealDB JavaScript SDK, which can be used to run SurrealDB as an embedded database within a Node.js server side environment. It enables SurrealDB to be run in-memory, or to persist data by running on top of SurrealKV. It allows for a consistent JavaScript and TypeScript API when using the `surrealdb.js` library by adding support for embedded storage engines (`memory`, `surrealkv`) alongside the remote connection protocols (`http`, `https`, `ws`, `wss`).
+This library is a plugin for the SurrealDB JavaScript SDK, which can be used to run SurrealDB as an embedded database within a Node.js server side environment.
+
+It enables SurrealDB to be run in-memory, or to persist data by running on top of SurrealKV. It allows for a consistent JavaScript and TypeScript API when using the `surrealdb.js` library by adding support for embedded storage engines (`memory`, `surrealkv`) alongside the remote connection protocols (`http`, `https`, `ws`, `wss`).
 
 ## Example usage
 
