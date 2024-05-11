@@ -30,7 +30,7 @@
 
 # surrealdb.node
 
-A Node.js engine for the SurrealDB JavaScript SDK.
+A Node.js engine for the SurrealDB [JavaScript SDK](https://github.com/surrealdb/surrealdb.js).
 
 > This library is under active development and is not yet released.
 
