@@ -5,6 +5,30 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@deno/shim-deno-test@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@deno/shim-deno-test@npm:0.4.0"
+  checksum: 37397110e88f7f0f450f2e44a529ca1b240f5063783cc2e29b740ddd653ecca628a3764b935069569bd8a2830dad8ba1460351579a723e81e346eff420622708
+  languageName: node
+  linkType: hard
+
+"@deno/shim-deno@npm:~0.16.1":
+  version: 0.16.1
+  resolution: "@deno/shim-deno@npm:0.16.1"
+  dependencies:
+    "@deno/shim-deno-test": ^0.4.0
+    which: ^2.0.2
+  checksum: 35f08fd7a09e958128cee5a167f6a16b17fd36b0b973a6ac0fed0cea7314180ea4fbc464e82b27d5b70d5ebfbedba1a111c4f6c9bff8bfea52f22e85342d72c9
+  languageName: node
+  linkType: hard
+
+"@icholy/duration@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@icholy/duration@npm:5.1.0"
+  checksum: 48c7c23697a510944bfc52cf0d354eba2b65d14633f910f2dc4c2a5e10e078d3b70bed9b310c37a574f0e6863084aa6cc65518cfc4af5cb2174605c7aad33352
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -19,12 +43,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/cli@npm:^2.16.3":
-  version: 2.16.3
-  resolution: "@napi-rs/cli@npm:2.16.3"
+"@napi-rs/cli@npm:^2.18.3":
+  version: 2.18.3
+  resolution: "@napi-rs/cli@npm:2.18.3"
   bin:
     napi: scripts/index.js
-  checksum: 11f78b09548bc5c22df56e4fab4a87b68c2d3f2a18a55cf11e775e6a4cb5739ec0e21a14e614db2cdc2b9773cb42536c6bd00c3f85d3b461f956594f8a89ddcb
+  checksum: d94470b37fd6305f94d82c58b3f1c643b60be14b6b053e30cc2ade426da58b5eb11e9efd78a576cecc0fab4d9ac8153e20b99fbab587db86ca14f75872927cf8
   languageName: node
   linkType: hard
 
@@ -333,6 +357,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bufferutil@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "bufferutil@npm:4.0.8"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: 7e9a46f1867dca72fda350966eb468eca77f4d623407b0650913fadf73d5750d883147d6e5e21c56f9d3b0bdc35d5474e80a600b9f31ec781315b4d2469ef087
+  languageName: node
+  linkType: hard
+
 "cacache@npm:^17.0.0":
   version: 17.1.4
   resolution: "cacache@npm:17.1.4"
@@ -357,6 +391,15 @@ __metadata:
   version: 4.1.0
   resolution: "callsites@npm:4.1.0"
   checksum: 4ad31de7b7615fa25bdab9c2373865209d2d5190f895cdf2e2f518bd1dafa7ebcda2e6e9cc9640f2dfde6b3893d82fa4359a78ffc27baad2503227553c6882fa
+  languageName: node
+  linkType: hard
+
+"cbor-redux@npm:1.0.0":
+  version: 1.0.0
+  resolution: "cbor-redux@npm:1.0.0"
+  dependencies:
+    "@deno/shim-deno": ~0.16.1
+  checksum: 5fac2cc916f3352995ab9a215dc23c26f51e396da4c38ddab2de1a6068cf7602ab2646b24ccabf1bc6f9022fd9b26af3b27939e9747bbf715a9e4d252c191617
   languageName: node
   linkType: hard
 
@@ -583,6 +626,13 @@ __metadata:
     supports-color:
       optional: true
   checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
+  languageName: node
+  linkType: hard
+
+"decimal.js@npm:^10.4.3":
+  version: 10.4.3
+  resolution: "decimal.js@npm:10.4.3"
+  checksum: 796404dcfa9d1dbfdc48870229d57f788b48c21c603c3f6554a1c17c10195fc1024de338b0cf9e1efe0c7c167eeb18f04548979bcc5fdfabebb7cc0ae3287bae
   languageName: node
   linkType: hard
 
@@ -1098,6 +1148,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isows@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "isows@npm:1.0.4"
+  peerDependencies:
+    ws: "*"
+  checksum: a3ee62e3d6216abb3adeeb2a551fe2e7835eac87b05a6ecc3e7739259bf5f8e83290501f49e26137390c8093f207fc3378d4a7653aab76ad7bbab4b2dba9c5b9
+  languageName: node
+  linkType: hard
+
 "jackspeak@npm:^2.0.3":
   version: 2.3.3
   resolution: "jackspeak@npm:2.3.3"
@@ -1389,6 +1448,17 @@ __metadata:
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
   checksum: b8ffeb1e262eff7968fc90a2b6767b04cfd9842582a9d0ece0af7049537266e7b2506dfb1d107a32f06dd849ab2aea834d5830f7f4d0e5cb7d36e1ae55d021d9
+  languageName: node
+  linkType: hard
+
+"node-gyp-build@npm:^4.3.0":
+  version: 4.8.1
+  resolution: "node-gyp-build@npm:4.8.1"
+  bin:
+    node-gyp-build: bin.js
+    node-gyp-build-optional: optional.js
+    node-gyp-build-test: build-test.js
+  checksum: fe6e95da6f4608c1a98655f6bf2fe4e8dd9c877cd13256056a8acaf585cc7f98718823fe9366be11b78c2f332d5a184b00cf07a4af96c9d8fea45f640c019f98
   languageName: node
   linkType: hard
 
@@ -1717,6 +1787,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:^7.5.4":
+  version: 7.6.2
+  resolution: "semver@npm:7.6.2"
+  bin:
+    semver: bin/semver.js
+  checksum: 40f6a95101e8d854357a644da1b8dd9d93ce786d5c6a77227bc69dbb17bea83d0d1d1d7c4cd5920a6df909f48e8bd8a5909869535007f90278289f2451d0292d
+  languageName: node
+  linkType: hard
+
 "serialize-error@npm:^7.0.1":
   version: 7.0.1
   resolution: "serialize-error@npm:7.0.1"
@@ -1894,12 +1973,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"surrealdb.js@npm:^1.0.0-beta.5":
+  version: 1.0.0-beta.9
+  resolution: "surrealdb.js@npm:1.0.0-beta.9"
+  dependencies:
+    "@icholy/duration": ^5.1.0
+    bufferutil: ^4.0.8
+    cbor-redux: 1.0.0
+    decimal.js: ^10.4.3
+    isows: ^1.0.4
+    semver: ^7.5.4
+    utf-8-validate: ^6.0.3
+    uuidv7: 0.6.3
+    ws: ^8.16.0
+    zod: "*"
+  dependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 12bd5476be9641619cad206c42d760412416c5dddfbe1b9baeb113d8e396afffa6a8c1e2e8a46b0eea3a1fa2c1742faf04369a1bd258f40926aa306807737971
+  languageName: node
+  linkType: hard
+
 "surrealdb.node@workspace:.":
   version: 0.0.0-use.local
   resolution: "surrealdb.node@workspace:."
   dependencies:
-    "@napi-rs/cli": ^2.16.3
+    "@napi-rs/cli": ^2.18.3
     ava: ^5.1.1
+    surrealdb.js: ^1.0.0-beta.5
+    zod: ^3.22.5
   languageName: unknown
   linkType: soft
 
@@ -1965,10 +2069,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"utf-8-validate@npm:^6.0.3":
+  version: 6.0.4
+  resolution: "utf-8-validate@npm:6.0.4"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: ccbfbceeed7cbad62282aed5420236d38006453ce583cf9021ad6225c2d15996a660a3b3bdd2b9344b4d3b5df5673fbaf9e70c3637628a2cd58824089d9d9153
+  languageName: node
+  linkType: hard
+
 "util-deprecate@npm:^1.0.1":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 474acf1146cb2701fe3b074892217553dfcf9a031280919ba1b8d651a068c9b15d863b7303cb15bd00a862b498e6cf4ad7b4a08fb134edd5a6f7641681cb54a2
+  languageName: node
+  linkType: hard
+
+"uuidv7@npm:0.6.3":
+  version: 0.6.3
+  resolution: "uuidv7@npm:0.6.3"
+  bin:
+    uuidv7: cli.js
+  checksum: 5cb26aa8a53392c2324acedba0460e5958aa6b6e28d96e19bd3175085d7f92d5d81fa8b10ea79adf1a5497188d1693597d2df56e7a7d24303ad45ec52ca15178
   languageName: node
   linkType: hard
 
@@ -2038,6 +2161,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ws@npm:^8.16.0":
+  version: 8.17.1
+  resolution: "ws@npm:8.17.1"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 442badcce1f1178ec87a0b5372ae2e9771e07c4929a3180321901f226127f252441e8689d765aa5cfba5f50ac60dd830954afc5aeae81609aefa11d3ddf5cecf
+  languageName: node
+  linkType: hard
+
 "y18n@npm:^5.0.5":
   version: 5.0.8
   resolution: "y18n@npm:5.0.8"
@@ -2078,5 +2216,12 @@ __metadata:
   version: 1.0.0
   resolution: "yocto-queue@npm:1.0.0"
   checksum: 2cac84540f65c64ccc1683c267edce396b26b1e931aa429660aefac8fbe0188167b7aee815a3c22fa59a28a58d898d1a2b1825048f834d8d629f4c2a5d443801
+  languageName: node
+  linkType: hard
+
+"zod@npm:*, zod@npm:^3.22.5":
+  version: 3.23.8
+  resolution: "zod@npm:3.23.8"
+  checksum: 15949ff82118f59c893dacd9d3c766d02b6fa2e71cf474d5aa888570c469dbf5446ac5ad562bb035bf7ac9650da94f290655c194f4a6de3e766f43febd432c5c
   languageName: node
   linkType: hard
