@@ -95,6 +95,9 @@ impl SurrealdbNodeEngine {
 
         Ok(SurrealdbNodeEngine(RwLock::new(inner)))
     }
+
+    #[napi]
+    pub fn free(&self) {}
 }
 
 struct SurrealdbNodeEngineInner {

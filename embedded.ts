@@ -35,6 +35,11 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions) {
 			token?: string;
 		} = {};
 
+		async version(url: URL, timeout: number): Promise<string> {
+			// TODO: implement proper logic
+			return "test";
+		}
+
 		readonly emitter: Emitter<EngineEvents>;
 		db?: Sne;
 
@@ -66,16 +71,16 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions) {
 				this.db = db;
 				this.setStatus(ConnectionStatus.Connected);
 
-				this.reader = (async () => {
-					const reader = db.notifications().getReader();
-					while (this.connected) {
-						const { done, value } = await reader.read();
-						if (done) break;
-						const raw = value as Uint8Array;
-						const { id, action, result } = decodeCbor(raw.buffer);
-						if (id) this.emitter.emit(`live-${id.toString()}`, [action, result], true);
-					}
-				})();
+				// this.reader = (async () => {
+				// 	const reader = db.notifications().getReader();
+				// 	while (this.connected) {
+				// 		const { done, value } = await reader.read();
+				// 		if (done) break;
+				// 		const raw = value as Uint8Array;
+				// 		const { id, action, result } = decodeCbor(raw.buffer);
+				// 		if (id) this.emitter.emit(`live-${id.toString()}`, [action, result], true);
+				// 	}
+				// })();
 			})();
 
 			this.ready = ready;
