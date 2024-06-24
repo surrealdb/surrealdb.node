@@ -252,6 +252,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { Surreal } = nativeBinding
+const { SurrealNodeEngine, Surreal } = nativeBinding
 
+module.exports.SurrealNodeEngine = SurrealNodeEngine
 module.exports.Surreal = Surreal
