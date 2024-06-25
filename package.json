@@ -53,12 +53,13 @@
   },
   "scripts": {
     "artifacts": "node move_artifacts.js",
-    "build": "napi build --platform --release && bash ./fix-deps.sh && npx tsc",
-    "build:debug": "napi build --platform && bash ./fix-deps.sh && npx tsc",
+    "build": "napi build --platform --release && bash ./fix-deps.sh && yarn ts-compile",
+    "build:debug": "napi build --platform && bash ./fix-deps.sh && yarn ts-compile",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",
     "universal": "napi universal",
-    "version": "napi version"
+    "version": "napi version",
+    "ts-compile": "yarn add typescript && tsc"
   },
   "packageManager": "yarn@3.6.3"
 }
