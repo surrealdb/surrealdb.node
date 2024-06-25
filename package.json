@@ -53,8 +53,8 @@
   },
   "scripts": {
     "artifacts": "node move_artifacts.js",
-    "build": "napi build --platform --release && bash ./fix-deps.sh && tsc",
-    "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
+    "build": "napi build --platform --release && bash ./fix-deps.sh && npx tsc",
+    "build:debug": "napi build --platform && bash ./fix-deps.sh && npx tsc",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",
     "universal": "napi universal",
