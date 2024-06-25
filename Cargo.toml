@@ -28,30 +28,3 @@ rocksdb = ["surrealdb/kv-rocksdb"]
 
 [profile.release]
 lto = true
-
-[target.x86_64-pc-windows-msvc.dependencies]
-surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3", features = [
-    "kv-surrealkv",
-    "kv-mem",
-    "kv-rocksdb",
-] }
-[target.x86_64-unknown-linux-gnu.dependencies]
-surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3", features = [
-    "kv-surrealkv",
-    "kv-mem",
-    "kv-rocksdb",
-] }
-[target.aarch64-linux-android.dependencies]
-surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3", features = [
-    "kv-surrealkv",
-    "kv-mem",
-    "kv-rocksdb",
-] }
-[target.armv7-linux-androideabi.dependencies]
-surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3", features = [
-    "kv-surrealkv",
-    "kv-mem",
-    "kv-rocksdb",
-] }
-# [target.aarch64-apple-darwin.dependencies]
-# surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }

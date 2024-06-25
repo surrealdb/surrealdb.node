@@ -461,8 +461,7 @@ jobs:
           path: ${{ env.APP_NAME }}.*.node
           if-no-files-found: error
   publish-dry-run:
-    if: ${{github.event_name != 'release'}}
-    name: Publish
+    name: Publish dry run
     runs-on: ubuntu-latest
     needs:
       # - build-freebsd
