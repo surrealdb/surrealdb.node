@@ -21,7 +21,8 @@ on:
       - '**/*.gitignore'
       - .editorconfig
       - docs/**
-  pull_request: null
+  pull_request:
+      branches: ["main"]
 jobs:
   build:
     strategy:
