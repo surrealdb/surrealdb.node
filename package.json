@@ -59,7 +59,7 @@
     "test": "ava",
     "universal": "napi universal",
     "version": "napi version",
-    "ts-compile": "yarn add typescript && tsc"
+    "ts-compile": "npm install --global typescript && tsc"
   },
   "packageManager": "yarn@3.6.3"
 }
