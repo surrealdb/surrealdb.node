@@ -449,11 +449,11 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn install
-      - name: Download macOS x64 artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: bindings-x86_64-apple-darwin
-          path: artifacts
+      # - name: Download macOS x64 artifact
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: bindings-x86_64-apple-darwin
+      #     path: artifacts
       - name: Download macOS arm64 artifact
         uses: actions/download-artifact@v3
         with:
