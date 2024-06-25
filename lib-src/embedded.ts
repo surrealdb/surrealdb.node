@@ -1,22 +1,9 @@
-import { SurrealdbNodeEngine as Sne } from "./index.js";
+import { SurrealdbNodeEngine as Sne } from "../index.js";
 import { ConnectionStatus, ConnectionUnavailable, decodeCbor, Emitter, encodeCbor, Engine, EngineEvents, RpcRequest, RpcResponse, UnexpectedConnectionError, UnexpectedServerResponse } from "surrealdb.js";
 import { z } from 'zod';
+import { ConnectionOptions } from "./types.js";
 
-type CapabilitiesAllowDenyList = {
-	allow?: boolean | string[];
-	deny?: boolean | string[];
-};
 
-type ConnectionOptions = {
-	strict?: boolean;
-	query_timeout?: number;
-	transaction_timeout?: number;
-	capabilities?: boolean | {
-		guest_access?: boolean;
-		functions?: boolean | string[] | CapabilitiesAllowDenyList;
-		network_targets?: boolean | string[] | CapabilitiesAllowDenyList;
-	}
-}
 
 let id = 0;
 function getIncrementalID() {
@@ -36,8 +23,8 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions) {
 		} = {};
 
 		async version(url: URL, timeout: number): Promise<string> {
-			// TODO: implement proper logic
-			return "test";
+			return Sne.version();
+
 		}
 
 		readonly emitter: Emitter<EngineEvents>;

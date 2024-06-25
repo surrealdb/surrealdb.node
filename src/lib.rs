@@ -8,6 +8,7 @@ use napi::bindgen_prelude::*;
 use napi::tokio::sync::RwLock;
 use napi_derive::napi;
 
+use once_cell::sync::Lazy;
 use serde_json::Value as JsValue;
 use surrealdb::dbs::Session;
 use surrealdb::kvs::Datastore;
@@ -98,6 +99,11 @@ impl SurrealdbNodeEngine {
 
     #[napi]
     pub fn free(&self) {}
+
+    #[napi]
+    pub fn version() -> std::result::Result<String, Error> {
+        Ok(SURREALDB_VERSION.clone())
+    }
 }
 
 struct SurrealdbNodeEngineInner {
@@ -127,9 +133,7 @@ impl RpcContext for SurrealdbNodeEngineInner {
     }
 
     fn version_data(&self) -> impl Into<Data> {
-        let val = "todo".to_string();
-
-        val
+        SURREALDB_VERSION.clone()
     }
 
     const LQ_SUPPORT: bool = true;
@@ -140,6 +144,22 @@ impl RpcContext for SurrealdbNodeEngineInner {
         async { () }
     }
 }
+
+static LOCK_FILE: &str = include_str!("../Cargo.lock");
+
+pub static SURREALDB_VERSION: Lazy<String> = Lazy::new(|| {
+    let lock: cargo_lock::Lockfile = LOCK_FILE.parse().expect("Failed to parse Cargo.lock");
+    let package = lock
+        .packages
+        .iter()
+        .find(|p| p.name.as_str() == "surrealdb")
+        .expect("Failed to find surrealdb in Cargo.lock");
+
+    format!(
+        "{}.{}.{}",
+        package.version.major, package.version.minor, package.version.patch
+    )
+});
 
 // #[napi]
 // pub struct Surreal {
