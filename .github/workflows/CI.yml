@@ -93,7 +93,7 @@ jobs:
           #     rustup target add aarch64-unknown-linux-musl &&
           #     yarn build --target aarch64-unknown-linux-musl &&
           #     /aarch64-linux-musl-cross/bin/aarch64-linux-musl-strip *.node
-          - host: arm64-i-032ab2e0b5c2105a1
+          - host: [self-hosted, linux, ARM64]
             target: aarch64-unknown-linux-musl
             build: rustup target add aarch64-unknown-linux-musl &&
               yarn build --target aarch64-unknown-linux-musl &&
