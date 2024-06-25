@@ -59,7 +59,7 @@
     "test": "npm install --global tsx && tsx tests.ts",
     "universal": "napi universal",
     "version": "napi version",
-    "ts-compile": "npm install --global typescript && tsc --version"
+    "ts-compile": "npm install --global typescript && tsc --version && tsc"
   },
   "packageManager": "yarn@3.6.3"
 }
