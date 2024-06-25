@@ -1,12 +1,12 @@
 import Surreal from "surrealdb.js";
 import { surrealdbNodeEngines } from "./lib-src/embedded.ts";
 
-const surreal = new Surreal({
-    engines: surrealdbNodeEngines()
-});
+async function run_mem() {
+    const surreal = new Surreal({
+        engines: surrealdbNodeEngines()
+    });
 
-async function run() {
-    console.log("connecting", await surreal.connect("mem://"));
+    console.log("connecting", await surreal.connect("mem://", { versionCheck: false }));
 
     console.log("using", await surreal.use({ namespace: "test", database: "test" }));
 
@@ -19,4 +19,4 @@ async function run() {
     console.log("closing", await surreal.close());
 }
 
-run()
+run_mem()
