@@ -494,6 +494,8 @@ jobs:
       - name: List packages
         run: ls -R ./npm
         shell: bash
+      - name: Compile TypeScript
+        run: yarn ts-compile
   publish:
     if: ${{github.event_name == 'release'}}
     name: Publish
@@ -528,6 +530,8 @@ jobs:
       - name: List packages
         run: ls -R ./npm
         shell: bash
+      - name: Compile TypeScript
+        run: yarn ts-compile
       - name: Publish
         run: |
           npm config set provenance true
