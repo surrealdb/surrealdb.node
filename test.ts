@@ -1,39 +1,21 @@
 import Surreal from "surrealdb.js";
 import { surrealdbNodeEngines } from "./lib-src/embedded.ts";
 
-async function run_mem() {
+async function run(endpoint) {
     const surreal = new Surreal({
         engines: surrealdbNodeEngines()
     });
 
-    console.log("connecting mem", await surreal.connect("mem://", { versionCheck: false }));
+    console.log("connecting " + endpoint, await surreal.connect(endpoint, { versionCheck: false }));
 
-    console.log("using mem", await surreal.use({ namespace: "test", database: "test" }));
+    console.log("using " + endpoint, await surreal.use({ namespace: "test", database: "test" }));
 
-    console.log("listening mem", await surreal.live("test", (res) => console.log("recieved live" + res)));
+    console.log("creating " + endpoint, await surreal.create('test', { val: 42 }));
 
-    console.log("creating mem", await surreal.create('test', { val: 42 }));
+    console.log("selecting " + endpoint, await surreal.select('test'));
 
-    console.log("selecting mem", await surreal.select('test'));
-
-    console.log("closing mem", await surreal.close());
+    console.log("closing " + endpoint, await surreal.close());
 }
 
-async function run_skv() {
-    const surreal = new Surreal({
-        engines: surrealdbNodeEngines()
-    });
-
-    console.log("connecting skv", await surreal.connect("surrealkv://test.skv", { versionCheck: false }));
-
-    console.log("using skv", await surreal.use({ namespace: "test", database: "test" }));
-
-    console.log("creating skv", await surreal.create('test', { val: 42 }));
-
-    console.log("selecting skv", await surreal.select('test'));
-
-    console.log("closing skv", await surreal.close());
-}
-
-run_mem()
-run_skv()
+run("surrealkv://test.skv")
+run("mem://")
