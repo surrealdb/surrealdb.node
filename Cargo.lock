@@ -3652,6 +3652,7 @@ dependencies = [
  "serde",
  "serde_json",
  "surrealdb",
+ "surrealdb-core",
  "uuid",
 ]
 

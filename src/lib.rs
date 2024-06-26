@@ -2,6 +2,7 @@ mod error;
 mod opt;
 
 use std::collections::BTreeMap;
+use std::time::Duration;
 
 use error::err_map;
 use napi::bindgen_prelude::*;
@@ -9,6 +10,8 @@ use napi::tokio::sync::RwLock;
 use napi_derive::napi;
 
 use once_cell::sync::Lazy;
+use opt::endpoint::Options;
+use serde_json::from_value;
 use serde_json::Value as JsValue;
 use surrealdb::dbs::Session;
 use surrealdb::kvs::Datastore;
@@ -61,7 +64,7 @@ impl SurrealdbNodeEngine {
     #[napi]
     pub async fn connect(
         endpoint: String,
-        #[napi(ts_arg_type = "ConnectionOptions")] _opts: Option<JsValue>,
+        #[napi(ts_arg_type = "ConnectionOptions")] opts: Option<JsValue>,
     ) -> std::result::Result<SurrealdbNodeEngine, Error> {
         let endpoint = match &endpoint {
             s if s.starts_with("mem:") => "memory",
@@ -71,7 +74,7 @@ impl SurrealdbNodeEngine {
             .await
             .map_err(err_map)?
             .with_notifications();
-        // let kvs = match from_value::<Option<Options>>(JsValue::from(opts))? {
+        // let kvs = match opts.map(|o| o.try_into()) {
         //     None => kvs,
         //     Some(opts) => kvs
         //         .with_capabilities(
@@ -85,6 +88,28 @@ impl SurrealdbNodeEngine {
         //         .with_query_timeout(opts.query_timeout.map(|qt| Duration::from_secs(qt as u64)))
         //         .with_strict_mode(opts.strict.map_or(Default::default(), |s| s)),
         // };
+
+        // let kvs = if let Some(opts) = opts.map(from_value::<Option<Options>>) {
+        //     kvs
+        // } else {
+        //     kvs
+        // };
+
+        let kvs = if let Some(o) = opts {
+            let opts = from_value::<Options>(o)?;
+            kvs.with_capabilities(
+                opts.capabilities
+                    .map_or(Ok(Default::default()), |a| a.try_into())?,
+            )
+            .with_transaction_timeout(
+                opts.transaction_timeout
+                    .map(|qt| Duration::from_secs(qt as u64)),
+            )
+            .with_query_timeout(opts.query_timeout.map(|qt| Duration::from_secs(qt as u64)))
+            .with_strict_mode(opts.strict.map_or(Default::default(), |s| s))
+        } else {
+            kvs
+        };
 
         let session = Session::default().with_rt(true);
 

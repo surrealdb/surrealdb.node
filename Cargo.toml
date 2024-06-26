@@ -18,6 +18,7 @@ surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-
     "kv-surrealkv",
     "kv-mem",
 ] }
+surrealdb-core = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3" }
 uuid = "1.8.0"
 
 [build-dependencies]
