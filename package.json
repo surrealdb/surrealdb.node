@@ -53,7 +53,7 @@
   },
   "scripts": {
     "artifacts": "node move_artifacts.js",
-    "build": "napi build --platform --release && bash ./fix-deps.sh",
+    "build": "napi build --platform --release \"$@\" && bash ./fix-deps.sh",
     "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
     "prepublishOnly": "napi prepublish -t npm",
     "test": "npm install --global tsx && tsx test.ts",
