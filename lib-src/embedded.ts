@@ -145,5 +145,6 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions) {
 
 	return {
 		mem: NodeEmbeddedEngine,
+		surrealkv: NodeEmbeddedEngine,
 	}
 }
