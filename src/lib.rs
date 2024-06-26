@@ -22,7 +22,7 @@ use surrealdb::rpc::{Data, RpcContext};
 use uuid::Uuid;
 
 #[napi]
-pub struct SurrealdbNodeEngine(RwLock<SurrealdbNodeEngineInner>);
+pub struct SurrealdbNodeEngine(RwLock<Option<SurrealdbNodeEngineInner>>);
 
 #[napi]
 impl SurrealdbNodeEngine {
@@ -35,10 +35,20 @@ impl SurrealdbNodeEngine {
                 self.0
                     .read()
                     .await
+                    .as_ref()
+                    .unwrap()
                     .execute_immut(method, in_data.params)
                     .await
             }
-            false => self.0.write().await.execute(method, in_data.params).await,
+            false => {
+                self.0
+                    .write()
+                    .await
+                    .as_mut()
+                    .unwrap()
+                    .execute(method, in_data.params)
+                    .await
+            }
         }
         .map_err(err_map)?;
 
@@ -119,11 +129,13 @@ impl SurrealdbNodeEngine {
             vars: Default::default(),
         };
 
-        Ok(SurrealdbNodeEngine(RwLock::new(inner)))
+        Ok(SurrealdbNodeEngine(RwLock::new(Some(inner))))
     }
 
     #[napi]
-    pub fn free(&self) {}
+    pub async fn free(&self) {
+        let _inner_opt = self.0.write().await.take();
+    }
 
     #[napi]
     pub fn version() -> std::result::Result<String, Error> {

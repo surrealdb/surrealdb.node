@@ -32,7 +32,8 @@ async function run_skv() {
 
     console.log("selecting skv", await surreal.select('test'));
 
+    console.log("closing skv", await surreal.close());
 }
 
-// run_mem()
+run_mem()
 run_skv()

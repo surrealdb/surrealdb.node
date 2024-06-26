@@ -7,6 +7,6 @@ import { ConnectionOptions } from "./lib-src/types.js";
 export class SurrealdbNodeEngine {
   execute(data: Uint8Array): Promise<Uint8Array>
   static connect(endpoint: string, opts?: ConnectionOptions): Promise<SurrealdbNodeEngine>
-  free(): void
+  free(): Promise<void>
   static version(): string
 }
