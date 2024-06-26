@@ -454,6 +454,8 @@ jobs:
         with:
           name: bindings-x86_64-apple-darwin
           path: artifacts
+      - name: List artifacts
+        run: ls /Users/runner/work/surrealdb.node/surrealdb.node/artifacts
       - name: Download macOS arm64 artifact
         uses: actions/download-artifact@v3
         with:
