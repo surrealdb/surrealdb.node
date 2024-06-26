@@ -11,7 +11,7 @@
 <br>
 
 <p align="center">
-    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/badge/status-dev-ff00bb.svg?style=flat-square"></a>
+    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/badge/status-beta-ff00bb.svg?style=flat-square"></a>
     &nbsp;
     <a href="https://surrealdb.com/docs/integration/libraries/javascript"><img src="https://img.shields.io/badge/docs-view-44cc11.svg?style=flat-square"></a>
     &nbsp;
@@ -31,8 +31,6 @@
 # surrealdb.node
 
 A Node.js engine for the SurrealDB [JavaScript SDK](https://github.com/surrealdb/surrealdb.js).
-
-> This library is under active development and is not yet released.
 
 This library is a plugin for the SurrealDB JavaScript SDK, which can be used to run SurrealDB as an embedded database within a Node.js server side environment.
 
