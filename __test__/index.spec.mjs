@@ -1,28 +1,37 @@
 import test from "ava";
 
-import { Surreal } from "../index.js";
+import { Surreal } from 'surrealdb.js';
+import { surrealdbNodeEngines } from '../lib-src/embedded.ts';
 
 test("Connect in-memory SurrealDB instance", async (t) => {
-	const db = new Surreal();
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
 	await db.connect("memory");
 	t.pass();
 });
 
 test("set ns/db", async (t) => {
 	{
-		const db = new Surreal();
+		const db = new Surreal({
+			engines: surrealdbNodeEngines(),
+		});
 		await db.connect("memory");
 		await db.use({ namespace: "test" });
 	}
 
 	{
-		const db = new Surreal();
+		const db = new Surreal({
+			engines: surrealdbNodeEngines(),
+		});
 		await db.connect("memory");
 		await db.use({ database: "test" });
 	}
 
 	{
-		const db = new Surreal();
+		const db = new Surreal({
+			engines: surrealdbNodeEngines(),
+		});
 		await db.connect("memory");
 		await db.use({ namespace: "test", database: "test" });
 	}
@@ -31,7 +40,9 @@ test("set ns/db", async (t) => {
 });
 
 test("test query method", async (t) => {
-	const db = new Surreal();
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
 	await db.connect("memory");
 	await db.use({ namespace: "test", database: "test" });
 
@@ -56,7 +67,9 @@ test("test query method", async (t) => {
 });
 
 test("set and and unset", async (t) => {
-	const db = new Surreal();
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
 	await db.connect("memory");
 	await db.use({ namespace: "test", database: "test" });
 
@@ -77,7 +90,9 @@ test("set and and unset", async (t) => {
 });
 
 test("auth", async (t) => {
-	const db = new Surreal();
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
 	await db.connect("memory");
 	await db.use({
 		namespace: "test",
@@ -124,7 +139,9 @@ test("auth", async (t) => {
 });
 
 test("test select method", async (t) => {
-	const db = new Surreal();
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
 	await db.connect("memory");
 	await db.use({ namespace: "test", database: "test" });
 

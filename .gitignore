@@ -233,3 +233,6 @@ $RECYCLE.BIN/
 *.node
 
 examples
+.idea
+lib/*
+test.skv

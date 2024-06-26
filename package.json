@@ -1,6 +1,6 @@
 {
   "name": "surrealdb.node",
-  "version": "0.4.0",
+  "version": "1.0.0-beta.1",
   "author": {
     "name": "Raphael Darley",
     "email": "raphael.darley@surrealdb.com"
@@ -30,10 +30,20 @@
       ]
     }
   },
+  "exports": {
+    ".": {
+      "types": "./lib/embedded.d.ts",
+      "default": "./lib/embedded.js"
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@napi-rs/cli": "^2.16.3",
+    "@napi-rs/cli": "^2.18.3",
     "ava": "^5.1.1"
+  },
+  "dependencies": {
+    "surrealdb.js": "^1.0.0-beta.7",
+    "zod": "^3.22.5"
   },
   "ava": {
     "timeout": "3m"
@@ -43,12 +53,13 @@
   },
   "scripts": {
     "artifacts": "node move_artifacts.js",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
+    "build": "napi build --platform --release \"$@\" && bash ./fix-deps.sh",
+    "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
     "prepublishOnly": "napi prepublish -t npm",
-    "test": "ava",
+    "test": "npm install --global tsx && tsx test.ts",
     "universal": "napi universal",
-    "version": "napi version"
+    "version": "napi version",
+    "ts-compile": "npm install --global typescript && tsc --version && tsc"
   },
   "packageManager": "yarn@3.6.3"
 }

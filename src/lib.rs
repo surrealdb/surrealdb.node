@@ -1,339 +1,199 @@
-mod array_response;
 mod error;
 mod opt;
 
-use array_response::array_response;
+use std::collections::BTreeMap;
+use std::time::Duration;
+
 use error::err_map;
 use napi::bindgen_prelude::*;
+use napi::tokio::sync::RwLock;
 use napi_derive::napi;
 
-use opt::patch::Patch;
-use opt::{auth::Credentials, endpoint::Options};
-use serde_json::to_value;
-use serde_json::{from_value, Value};
-use std::collections::VecDeque;
-use surrealdb::dbs::Capabilities;
-use surrealdb::engine::any::Any;
-use surrealdb::opt::auth::Database;
-use surrealdb::opt::auth::Namespace;
-use surrealdb::opt::auth::Root;
-use surrealdb::opt::auth::Scope;
-use surrealdb::opt::Resource;
-use surrealdb::opt::{Config, PatchOp};
-use surrealdb::sql::{self, Range, json};
+use once_cell::sync::Lazy;
+use opt::endpoint::Options;
+use serde_json::from_value;
+use serde_json::Value as JsValue;
+use surrealdb::dbs::Session;
+use surrealdb::kvs::Datastore;
+use surrealdb::rpc::format::cbor;
+use surrealdb::rpc::method::Method;
+
+use surrealdb::rpc::{Data, RpcContext};
+use uuid::Uuid;
 
 #[napi]
-pub struct Surreal {
-    db: surrealdb::Surreal<Any>,
-}
+pub struct SurrealdbNodeEngine(RwLock<Option<SurrealdbNodeEngineInner>>);
 
 #[napi]
-impl Surreal {
-    #[napi(constructor)]
-    pub fn init() -> Self {
-        Self {
-            db: surrealdb::Surreal::init(),
-        }
-    }
-
-	#[napi]
-    pub async fn connect(&self, endpoint: String, #[napi(ts_arg_type = "Record<string, unknown>")] opts: Option<Value>) -> Result<()> {
-        let opts: Option<Options> = match opts {
-            Some(o) => serde_json::from_value(o)?,
-            None => None,
-        };
-
-        let config = Config::new().capabilities(Capabilities::all());
-
-        let connect = match opts {
-            Some(opts) => {
-                let connect = match opts.strict {
-                    #[cfg(any(feature = "kv-indxdb", feature = "kv-mem"))]
-                    Some(true) => self.db.connect((endpoint, config.strict())),
-                    _ => self.db.connect((endpoint, config)),
-                };
-                match opts.capacity {
-                    Some(capacity) => connect.with_capacity(capacity),
-                    None => connect,
-                }
-            }
-            None => self.db.connect(endpoint),
-        };
-        connect.await.map_err(err_map)
-    }
-
-    #[napi(js_name = use)]
-    pub async fn yuse(&self, #[napi(ts_arg_type = "{ namespace?: string; database?: string }")] value: Value) -> Result<()> {
-        let opts: opt::yuse::Use = serde_json::from_value(value)?;
-        match (opts.namespace, opts.database) {
-            (Some(namespace), Some(database)) => self.db.use_ns(namespace).use_db(database).await.map_err(err_map),
-            (Some(namespace), None) => self.db.use_ns(namespace).await.map_err(err_map),
-            (None, Some(database)) => self.db.use_db(database).await.map_err(err_map),
-            (None, None) => Err(napi::Error::from_reason(
-                "Select either namespace or database to use",
-            )),
-        }
-    }
-
+impl SurrealdbNodeEngine {
     #[napi]
-    pub async fn set(&self, key: String, #[napi(ts_arg_type = "unknown")] value: Value) -> Result<()> {
-        self.db.set(key, value).await.map_err(err_map)?;
-        Ok(())
-    }
-
-    #[napi]
-    pub async fn unset(&self, key: String) -> Result<()> {
-        self.db.unset(key).await.map_err(err_map)?;
-        Ok(())
-    }
-
-    #[napi(ts_return_type="Promise<string>")]
-    pub async fn signup(&self, #[napi(ts_arg_type = "{ namespace: string; database: string; scope: string; [k: string]: unknown }")] credentials: Value) -> Result<Value> {
-        match from_value::<Credentials>(credentials)? {
-            Credentials::Scope {
-                namespace,
-                database,
-                scope,
-                params,
-            } => {
-                let response = self
-                    .db
-                    .signup(Scope {
-                        params,
-                        namespace: &namespace,
-                        database: &database,
-                        scope: &scope,
-                    })
+    pub async fn execute(&self, data: Uint8Array) -> std::result::Result<Uint8Array, Error> {
+        let in_data = cbor::req(data.to_vec()).map_err(err_map)?;
+        let method = Method::parse(in_data.method);
+        let res = match method.can_be_immut() {
+            true => {
+                self.0
+                    .read()
                     .await
-                    .map_err(err_map)?;
-                Ok(to_value(&response)?)
+                    .as_ref()
+                    .unwrap()
+                    .execute_immut(method, in_data.params)
+                    .await
             }
-            Credentials::Database { .. } => Err(napi::Error::from_reason(
-                "Database users cannot signup, only scope users can",
-            )),
-            Credentials::Namespace { .. } => Err(napi::Error::from_reason(
-                "Namespace users cannot signup, only scope users can",
-            )),
-            Credentials::Root { .. } => Err(napi::Error::from_reason(
-                "Root users cannot signup, only scope users can",
-            )),
+            false => {
+                self.0
+                    .write()
+                    .await
+                    .as_mut()
+                    .unwrap()
+                    .execute(method, in_data.params)
+                    .await
+            }
         }
+        .map_err(err_map)?;
+
+        let out = cbor::res(res).map_err(err_map)?;
+        Ok(out.as_slice().into())
     }
 
-    #[napi(ts_return_type="Promise<string>")]
-    pub async fn signin(&self, #[napi(ts_arg_type = "{ username: string; password: string } | { namespace: string; username: string; password: string } | { namespace: string; database: string; username: string; password: string } | { namespace: string; database: string; scope: string; [k: string]: unknown }")] credentials: Value) -> Result<Value> {
-        let signin = match &from_value::<Credentials>(credentials)? {
-            Credentials::Scope {
-                namespace,
-                database,
-                scope,
-                params,
-            } => self.db.signin(Scope {
-                namespace,
-                database,
-                scope,
-                params,
-            }),
-            Credentials::Database {
-                namespace,
-                database,
-                username,
-                password,
-            } => self.db.signin(Database {
-                namespace,
-                database,
-                username,
-                password,
-            }),
-            Credentials::Namespace {
-                namespace,
-                username,
-                password,
-            } => self.db.signin(Namespace {
-                namespace,
-                username,
-                password,
-            }),
-            Credentials::Root {
-				username,
-				password
-			} => self.db.signin(Root {
-				username,
-				password
-			}),
+    // pub fn notifications(&self) -> std::result::Result<sys::ReadableStream, Error> {
+    //     let stream = self.0.kvs.notifications().ok_or("Notifications not enabled")?;
+    //
+    //
+    //     let response = stream.map(|notification| {
+    //         let json = json!({
+    // 			"id": notification.id,
+    // 			"action": notification.action.to_string(),
+    // 			"result": notification.result.into_json(),
+    // 		});
+    //         to_value(&json).map_err(Into::into)
+    //     });
+    //     Ok(ReadableStream::from_stream(response).into_raw())
+    // }
+
+    #[napi]
+    pub async fn connect(
+        endpoint: String,
+        #[napi(ts_arg_type = "ConnectionOptions")] opts: Option<JsValue>,
+    ) -> std::result::Result<SurrealdbNodeEngine, Error> {
+        let endpoint = match &endpoint {
+            s if s.starts_with("mem:") => "memory",
+            s => s,
         };
-        Ok(to_value(&signin.await.map_err(err_map)?)?)
+        let kvs = Datastore::new(endpoint)
+            .await
+            .map_err(err_map)?
+            .with_notifications();
+        // let kvs = match opts.map(|o| o.try_into()) {
+        //     None => kvs,
+        //     Some(opts) => kvs
+        //         .with_capabilities(
+        //             opts.capabilities
+        //                 .map_or(Ok(Default::default()), |a| a.try_into())?,
+        //         )
+        //         .with_transaction_timeout(
+        //             opts.transaction_timeout
+        //                 .map(|qt| Duration::from_secs(qt as u64)),
+        //         )
+        //         .with_query_timeout(opts.query_timeout.map(|qt| Duration::from_secs(qt as u64)))
+        //         .with_strict_mode(opts.strict.map_or(Default::default(), |s| s)),
+        // };
+
+        // let kvs = if let Some(opts) = opts.map(from_value::<Option<Options>>) {
+        //     kvs
+        // } else {
+        //     kvs
+        // };
+
+        let kvs = if let Some(o) = opts {
+            let opts = from_value::<Options>(o)?;
+            kvs.with_capabilities(
+                opts.capabilities
+                    .map_or(Ok(Default::default()), |a| a.try_into())?,
+            )
+            .with_transaction_timeout(
+                opts.transaction_timeout
+                    .map(|qt| Duration::from_secs(qt as u64)),
+            )
+            .with_query_timeout(opts.query_timeout.map(|qt| Duration::from_secs(qt as u64)))
+            .with_strict_mode(opts.strict.map_or(Default::default(), |s| s))
+        } else {
+            kvs
+        };
+
+        let session = Session::default().with_rt(true);
+
+        let inner = SurrealdbNodeEngineInner {
+            kvs,
+            session,
+            vars: Default::default(),
+        };
+
+        Ok(SurrealdbNodeEngine(RwLock::new(Some(inner))))
     }
 
     #[napi]
-    pub async fn invalidate(&self) -> Result<()> {
-        self.db.invalidate().await.map_err(err_map)?;
-        Ok(())
-    }
-
-    #[napi(ts_return_type="Promise<boolean>")]
-    pub async fn authenticate(&self, token: String) -> Result<Value> {
-        self.db.authenticate(token).await.map_err(err_map)?;
-        Ok(Value::Bool(true))
-    }
-
-    #[napi(ts_return_type="Promise<unknown[]>")]
-    pub async fn query(&self, sql: String, #[napi(ts_arg_type = "Record<string, unknown>")] bindings: Option<Value>) -> Result<Value> {
-        let mut response = match bindings {
-            None => self.db.query(sql).await.map_err(err_map)?,
-            Some(b) => {
-                let b = json(&b.to_string()).map_err(err_map)?;
-                self.db.query(sql).bind(b).await.map_err(err_map)?
-            },
-        };
-
-        let num_statements = response.num_statements();
-
-        let response: sql::Value = {
-            let mut output = Vec::<sql::Value>::with_capacity(num_statements);
-            for index in 0..num_statements {
-                output.push(response.take(index).map_err(err_map)?);
-            }
-            sql::Value::from(output)
-        };
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
-    pub async fn select(&self, resource: String) -> Result<Value> {
-        let response = match resource.parse::<Range>() {
-            Ok(range) => self
-                .db
-                .select(Resource::from(range.tb))
-                .range((range.beg, range.end))
-                .await
-                .map_err(err_map)?,
-            Err(_) => self
-                .db
-                .select(Resource::from(resource))
-                .await
-                .map_err(err_map)?,
-        };
-		let response = array_response(response);
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
-    pub async fn create(&self, resource: String, #[napi(ts_arg_type = "Record<string, unknown>")] data: Option<Value>) -> Result<Value> {
-        let resource = Resource::from(resource);
-		let response = match data {
-            None => self.db.create(resource).await.map_err(err_map)?,
-            Some(d) => {
-                let d = json(&d.to_string()).map_err(err_map)?;
-                self.db.create(resource).content(d).await.map_err(err_map)?
-            },
-        };
-		let response = array_response(response);
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
-    pub async fn update(&self, resource: String, #[napi(ts_arg_type = "Record<string, unknown>")] data: Option<Value>) -> Result<Value> {
-        let update = match resource.parse::<Range>() {
-            Ok(range) => self
-                .db
-                .update(Resource::from(range.tb))
-                .range((range.beg, range.end)),
-            Err(_) => self.db.update(Resource::from(resource)),
-        };
-		let response = match data {
-            None => update.await.map_err(err_map)?,
-            Some(d) => {
-                let d = json(&d.to_string()).map_err(err_map)?;
-                update.content(d).await.map_err(err_map)?
-            },
-        };
-		let response = array_response(response);
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
-    pub async fn merge(&self, resource: String, #[napi(ts_arg_type = "Record<string, unknown>")] data: Value) -> Result<Value> {
-        let update = match resource.parse::<Range>() {
-            Ok(range) => self
-                .db
-                .update(Resource::from(range.tb))
-                .range((range.beg, range.end)),
-            Err(_) => self.db.update(Resource::from(resource)),
-        };
-		let data = json(&data.to_string()).map_err(err_map)?;
-        let response = update.merge(data).await.map_err(err_map)?;
-		let response = array_response(response);
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<unknown[]>")]
-    pub async fn patch(&self, resource: String, #[napi(ts_arg_type = "unknown[]")] data: Value) -> Result<Value> {
-        // Prepare the update request
-        let update = match resource.parse::<Range>() {
-            Ok(range) => self
-                .db
-                .update(Resource::from(range.tb))
-                .range((range.beg, range.end)),
-            Err(_) => self.db.update(Resource::from(resource)),
-        };
-        let mut patches: VecDeque<Patch> = from_value(data)?;
-        // Extract the first patch
-        let mut patch = match patches.pop_front() {
-            // Setup the correct update type using the first patch
-            Some(p) => update.patch(match p {
-                Patch::Add { path, value } => PatchOp::add(&path, value),
-                Patch::Remove { path } => PatchOp::remove(&path),
-                Patch::Replace { path, value } => PatchOp::replace(&path, value),
-                Patch::Change { path, diff } => PatchOp::change(&path, diff),
-            }),
-            None => {
-                return Ok(to_value(&update.await.map_err(err_map)?.into_json())?);
-            }
-        };
-        // Loop through the rest of the patches and append them
-        for p in patches {
-            patch = patch.patch(match p {
-                Patch::Add { path, value } => PatchOp::add(&path, value),
-                Patch::Remove { path } => PatchOp::remove(&path),
-                Patch::Replace { path, value } => PatchOp::replace(&path, value),
-                Patch::Change { path, diff } => PatchOp::change(&path, diff),
-            });
-        }
-        // Execute the update statement
-        let response = patch.await.map_err(err_map)?;
-		let response = array_response(response);
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<{ id: string; [k: string]: unknown }[]>")]
-    pub async fn delete(&self, resource: String) -> Result<Value> {
-        let response = match resource.parse::<Range>() {
-            Ok(range) => self
-                .db
-                .delete(Resource::from(range.tb))
-                .range((range.beg, range.end))
-                .await
-                .map_err(err_map)?,
-            Err(_) => self
-                .db
-                .delete(Resource::from(resource))
-                .await
-                .map_err(err_map)?,
-        };
-		let response = array_response(response);
-        Ok(to_value(&response.into_json())?)
-    }
-
-    #[napi(ts_return_type="Promise<string>")]
-    pub async fn version(&self) -> Result<Value> {
-        let response = self.db.version().await.map_err(err_map)?;
-        Ok(to_value(&response)?)
+    pub async fn free(&self) {
+        let _inner_opt = self.0.write().await.take();
     }
 
     #[napi]
-    pub async fn health(&self) -> Result<()> {
-        self.db.health().await.map_err(err_map)?;
-        Ok(())
+    pub fn version() -> std::result::Result<String, Error> {
+        Ok(SURREALDB_VERSION.clone())
     }
 }
+
+struct SurrealdbNodeEngineInner {
+    pub kvs: Datastore,
+    pub session: Session,
+    pub vars: BTreeMap<String, surrealdb::sql::Value>,
+}
+impl RpcContext for SurrealdbNodeEngineInner {
+    fn kvs(&self) -> &Datastore {
+        &self.kvs
+    }
+
+    fn session(&self) -> &Session {
+        &self.session
+    }
+
+    fn session_mut(&mut self) -> &mut Session {
+        &mut self.session
+    }
+
+    fn vars(&self) -> &BTreeMap<String, surrealdb::sql::Value> {
+        &self.vars
+    }
+
+    fn vars_mut(&mut self) -> &mut BTreeMap<String, surrealdb::sql::Value> {
+        &mut self.vars
+    }
+
+    fn version_data(&self) -> impl Into<Data> {
+        SURREALDB_VERSION.clone()
+    }
+
+    const LQ_SUPPORT: bool = true;
+    fn handle_live(&self, _lqid: &Uuid) -> impl std::future::Future<Output = ()> + Send {
+        async { () }
+    }
+    fn handle_kill(&self, _lqid: &Uuid) -> impl std::future::Future<Output = ()> + Send {
+        async { () }
+    }
+}
+
+static LOCK_FILE: &str = include_str!("../Cargo.lock");
+
+pub static SURREALDB_VERSION: Lazy<String> = Lazy::new(|| {
+    let lock: cargo_lock::Lockfile = LOCK_FILE.parse().expect("Failed to parse Cargo.lock");
+    let package = lock
+        .packages
+        .iter()
+        .find(|p| p.name.as_str() == "surrealdb")
+        .expect("Failed to find surrealdb in Cargo.lock");
+
+    format!(
+        "{}.{}.{}",
+        package.version.major, package.version.minor, package.version.patch
+    )
+});

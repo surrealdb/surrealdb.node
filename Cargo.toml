@@ -7,12 +7,19 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+cargo-lock = "9.0.0"
 dmp = "0.2.0"
 napi = { version = "2", features = ["async", "serde-json"] }
 napi-derive = "2"
+once_cell = "1.19.0"
 serde = "1.0.188"
 serde_json = "1.0.105"
-surrealdb = { version = "1.0.0", features = ["kv-mem"] }
+surrealdb = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3", features = [
+    "kv-surrealkv",
+    "kv-mem",
+] }
+surrealdb-core = { git = "https://github.com/surrealdb/surrealdb.git", tag = "v2.0.0-alpha.3" }
+uuid = "1.8.0"
 
 [build-dependencies]
 napi-build = "2.0.1"
@@ -22,14 +29,3 @@ rocksdb = ["surrealdb/kv-rocksdb"]
 
 [profile.release]
 lto = true
-
-[target.x86_64-pc-windows-msvc.dependencies]
-surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
-[target.x86_64-unknown-linux-gnu.dependencies]
-surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
-[target.aarch64-linux-android.dependencies]
-surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
-[target.armv7-linux-androideabi.dependencies]
-surrealdb = { version = "1.0.0", features = ["kv-mem", "kv-rocksdb"] }
-# [target.aarch64-apple-darwin.dependencies]
-# surrealdb = { version = "1.0.0-beta.10", features = ["kv-mem", "kv-rocksdb"] }
