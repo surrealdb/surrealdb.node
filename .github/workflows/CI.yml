@@ -113,7 +113,9 @@ jobs:
               with:
                   node-version: 18
                   check-latest: true
-                  cache: pnpm
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 9
             - name: Install
               uses: dtolnay/rust-toolchain@stable
               if: ${{ !matrix.settings.docker }}
