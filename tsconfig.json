@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "esnext",
-        "module": "esnext",
+        "module": "CommonJS",
         "moduleResolution": "node",
         "noImplicitAny": false,
         "removeComments": true,
@@ -11,10 +11,6 @@
         "outDir": "lib",
         "declaration": true
     },
-    "include": [
-        "lib-src/embedded.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+    "include": ["lib-src/embedded.ts"],
+    "exclude": ["node_modules"]
 }
