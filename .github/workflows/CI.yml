@@ -152,7 +152,6 @@ jobs:
               with:
                   node-version: 18
                   check-latest: true
-                  cache: pnpm
                   architecture: x86
             - name: Build in docker
               uses: addnab/docker-run-action@v3
@@ -243,7 +242,6 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
                   check-latest: true
-                  cache: pnpm
             - name: Install dependencies
               run: pnpm install
             - name: Download artifacts
@@ -275,7 +273,6 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
                   check-latest: true
-                  cache: pnpm
             - name: Install dependencies
               run: pnpm install
             - name: Download artifacts
@@ -307,7 +304,6 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
                   check-latest: true
-                  cache: pnpm
             - name: Install dependencies
               run: |
                   pnpm config set supportedArchitectures.libc "musl"
@@ -448,7 +444,6 @@ jobs:
               with:
                   node-version: 18
                   check-latest: true
-                  cache: pnpm
             - name: Install dependencies
               run: pnpm install
             - name: Download macOS x64 artifact
@@ -492,7 +487,6 @@ jobs:
               with:
                   node-version: 18
                   check-latest: true
-                  cache: pnpm
             - name: Install dependencies
               run: pnpm install
             - name: Download all artifacts
@@ -528,7 +522,6 @@ jobs:
               with:
                   node-version: 18
                   check-latest: true
-                  cache: pnpm
             - name: Install dependencies
               run: pnpm install
             - name: Download all artifacts
