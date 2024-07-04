@@ -12,6 +12,22 @@
     "description": "Node.js driver for SurrealDB",
     "main": "index.js",
     "types": "index.d.ts",
+    "scripts": {
+        "build": "napi build --platform --release artifacts",
+        "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
+        "prepublishOnly": "napi prepublish -t npm",
+        "test": "pnpm tsx test.ts",
+        "universal": "napi universal",
+        "version": "napi version",
+        "ts-compile": "pnpm tsc --version && pnpm tsc"
+    },
+    "files": [
+        "lib",
+        "index.d.ts",
+        "index.js",
+        "npm",
+        "surrealdb.node.*.node"
+    ],
     "napi": {
         "name": "surrealdb.node",
         "triples": {
@@ -38,8 +54,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@napi-rs/cli": "^2.18.3",
-        "ava": "^5.1.1"
+        "@napi-rs/cli": "^2.18.4",
+        "ava": "^5.1.1",
+        "tsx": "^4.16.2",
+        "typescript": "^5.5.3"
     },
     "dependencies": {
         "surrealdb.js": "^1.0.0-beta.12"
@@ -52,16 +70,5 @@
     },
     "engines": {
         "node": ">= 10"
-    },
-    "scripts": {
-        "artifacts": "node move_artifacts.js",
-        "build": "napi build --platform --release \"$@\" && bash ./fix-deps.sh",
-        "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
-        "prepublishOnly": "napi prepublish -t npm",
-        "test": "pnpx tsx test.ts",
-        "universal": "napi universal",
-        "version": "napi version",
-        "ts-compile": "pnpx tsc --version && pnpx tsc"
-    },
-    "files": ["lib", "index.d.ts", "index.js", "npm", "surrealdb.node.*.node"]
+    }
 }

@@ -225,3 +225,4 @@ examples
 .idea
 lib/*
 test.skv
+artifacts
