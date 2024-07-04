@@ -42,6 +42,7 @@
         "ava": "^5.1.1"
     },
     "dependencies": {
+        "npx": "^10.2.2",
         "surrealdb.js": "^1.0.0-beta.12"
     },
     "peerDependencies": {
@@ -58,10 +59,10 @@
         "build": "napi build --platform --release \"$@\" && bash ./fix-deps.sh",
         "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
         "prepublishOnly": "napi prepublish -t npm",
-        "test": "node test.mjs",
+        "test": "pnpx tsx test.ts",
         "universal": "napi universal",
         "version": "napi version",
-        "ts-compile": "npm install --global typescript && tsc --version && tsc"
+        "ts-compile": "pnpx tsc --version && pnpx tsc"
     },
     "files": ["lib", "index.d.ts", "index.js", "npm", "surrealdb.node.*.node"]
 }

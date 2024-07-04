@@ -1,5 +1,5 @@
 import Surreal from "surrealdb.js";
-import { surrealdbNodeEngines } from "./lib/embedded.js";
+import { surrealdbNodeEngines } from "./lib-src/embedded.ts";
 
 async function run(endpoint) {
     const surreal = new Surreal({
