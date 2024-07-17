@@ -115,7 +115,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install
               uses: dtolnay/rust-toolchain@stable
               if: ${{ !matrix.settings.docker }}
@@ -244,7 +244,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: pnpm install
             - name: Download artifacts
@@ -278,7 +278,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: pnpm install
             - name: Download artifacts
@@ -312,7 +312,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: |
                   pnpm config set supportedArchitectures.libc "musl"
@@ -356,7 +356,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: |
                   pnpm config set supportedArchitectures.cpu "arm64"
@@ -463,7 +463,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: pnpm install
             - name: Download macOS x64 artifact
@@ -509,7 +509,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: pnpm install
             - name: Download all artifacts
@@ -547,7 +547,7 @@ jobs:
                   check-latest: true
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9
+                  version: 8
             - name: Install dependencies
               run: pnpm install
             - name: Download all artifacts
