@@ -58,10 +58,10 @@
         "build": "bash ./build.sh",
         "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
         "prepublishOnly": "napi prepublish -t npm",
-        "test": "tsx test.ts",
+        "test": "npx tsx test.ts",
         "universal": "napi universal",
         "version": "napi version",
-        "ts-compile": "tsc --version && pnpx tsc"
+        "ts-compile": "npx tsc --version && pnpx tsc"
     },
     "files": [
         "lib",
