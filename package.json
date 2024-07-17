@@ -58,10 +58,16 @@
         "build": "bash ./build.sh",
         "build:debug": "napi build --platform && bash ./fix-deps.sh && tsc",
         "prepublishOnly": "napi prepublish -t npm",
-        "test": "pnpx tsx test.ts",
+        "test": "tsx test.ts",
         "universal": "napi universal",
         "version": "napi version",
-        "ts-compile": "pnpx tsc --version && pnpx tsc"
+        "ts-compile": "tsc --version && pnpx tsc"
     },
-    "files": ["lib", "index.d.ts", "index.js", "npm", "surrealdb.node.*.node"]
+    "files": [
+        "lib",
+        "index.d.ts",
+        "index.js",
+        "npm",
+        "surrealdb.node.*.node"
+    ]
 }
