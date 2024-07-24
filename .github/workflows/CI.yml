@@ -326,7 +326,7 @@ jobs:
               run: ls -R .
               shell: bash
             - name: Test bindings
-              run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine npm run test
+              run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine sudo chown -R 1001:127 "/root/.npm" && npm run test
     test-linux-aarch64-gnu-binding:
         name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
         needs:
