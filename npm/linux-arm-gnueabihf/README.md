@@ -1,3 +1,3 @@
 # `surrealdb.node-linux-arm-gnueabihf`
 
-This is the **armv7-unknown-linux-gnueabihf** binary for `surrealdb.node`
+This is the **armv7-unknown-linux-gnueabihf** binary for `@surrealdb/node`

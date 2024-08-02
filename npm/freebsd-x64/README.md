@@ -1,3 +1,3 @@
 # `surrealdb.node-freebsd-x64`
 
-This is the **x86_64-unknown-freebsd** binary for `surrealdb.node`
+This is the **x86_64-unknown-freebsd** binary for `@surrealdb/node`
