@@ -1,3 +1,3 @@
-# `@surrealdb/node-linux-arm64-gnu`
+# `surrealdb.node-linux-arm64-gnu`
 
-This is the **aarch64-unknown-linux-gnu** binary for `@surrealdb/node`
+This is the **aarch64-unknown-linux-gnu** binary for `surrealdb.node`

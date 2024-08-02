@@ -1,165 +1,165 @@
 import test from "ava";
 
-import { Surreal } from "surrealdb";
-import { surrealdbNodeEngines } from "../lib-src/embedded.ts";
+import { Surreal } from 'surrealdb.js';
+import { surrealdbNodeEngines } from '../lib-src/embedded.ts';
 
 test("Connect in-memory SurrealDB instance", async (t) => {
-    const db = new Surreal({
-        engines: surrealdbNodeEngines(),
-    });
-    await db.connect("memory");
-    t.pass();
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
+	await db.connect("memory");
+	t.pass();
 });
 
 test("set ns/db", async (t) => {
-    {
-        const db = new Surreal({
-            engines: surrealdbNodeEngines(),
-        });
-        await db.connect("memory");
-        await db.use({ namespace: "test" });
-    }
+	{
+		const db = new Surreal({
+			engines: surrealdbNodeEngines(),
+		});
+		await db.connect("memory");
+		await db.use({ namespace: "test" });
+	}
 
-    {
-        const db = new Surreal({
-            engines: surrealdbNodeEngines(),
-        });
-        await db.connect("memory");
-        await db.use({ database: "test" });
-    }
+	{
+		const db = new Surreal({
+			engines: surrealdbNodeEngines(),
+		});
+		await db.connect("memory");
+		await db.use({ database: "test" });
+	}
 
-    {
-        const db = new Surreal({
-            engines: surrealdbNodeEngines(),
-        });
-        await db.connect("memory");
-        await db.use({ namespace: "test", database: "test" });
-    }
+	{
+		const db = new Surreal({
+			engines: surrealdbNodeEngines(),
+		});
+		await db.connect("memory");
+		await db.use({ namespace: "test", database: "test" });
+	}
 
-    t.pass();
+	t.pass();
 });
 
 test("test query method", async (t) => {
-    const db = new Surreal({
-        engines: surrealdbNodeEngines(),
-    });
-    await db.connect("memory");
-    await db.use({ namespace: "test", database: "test" });
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
+	await db.connect("memory");
+	await db.use({ namespace: "test", database: "test" });
 
-    {
-        const [res] = await db.query("SELECT * FROM person");
-        t.deepEqual(res, []);
-    }
+	{
+		const [res] = await db.query("SELECT * FROM person");
+		t.deepEqual(res, []);
+	}
 
-    {
-        const [res] = await db.query("CREATE |foo:100|");
-        t.is(res.length, 100);
-    }
+	{
+		const [res] = await db.query("CREATE |foo:100|");
+		t.is(res.length, 100);
+	}
 
-    {
-        const data = { first_name: "Tobie", projects: ["SurrealDB"] };
-        const [res] = await db.query("CREATE person:tobie content $data", {
-            data: data,
-        });
-        data.id = "person:tobie";
-        t.deepEqual(res, [data]);
-    }
+	{
+		const data = { first_name: "Tobie", projects: ["SurrealDB"] };
+		const [res] = await db.query("CREATE person:tobie content $data", {
+			data: data,
+		});
+		data.id = "person:tobie";
+		t.deepEqual(res, [data]);
+	}
 });
 
 test("set and and unset", async (t) => {
-    const db = new Surreal({
-        engines: surrealdbNodeEngines(),
-    });
-    await db.connect("memory");
-    await db.use({ namespace: "test", database: "test" });
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
+	await db.connect("memory");
+	await db.use({ namespace: "test", database: "test" });
 
-    const data = { first: "Tobie", last: "Morgan Hitchcock" };
+	const data = { first: "Tobie", last: "Morgan Hitchcock" };
 
-    await db.set("name", data);
-    {
-        const [res] = await db.query("RETURN $name");
-        t.deepEqual(res, [data]);
-    }
+	await db.set("name", data);
+	{
+		const [res] = await db.query("RETURN $name");
+		t.deepEqual(res, [data]);
+	}
 
-    await db.unset("name");
+	await db.unset("name");
 
-    {
-        const [res] = await db.query("RETURN $name");
-        t.deepEqual(res, []);
-    }
+	{
+		const [res] = await db.query("RETURN $name");
+		t.deepEqual(res, []);
+	}
 });
 
 test("auth", async (t) => {
-    const db = new Surreal({
-        engines: surrealdbNodeEngines(),
-    });
-    await db.connect("memory");
-    await db.use({
-        namespace: "test",
-        database: "test",
-    });
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
+	await db.connect("memory");
+	await db.use({
+		namespace: "test",
+		database: "test"
+	});
 
-    const scope = /* surql */ `DEFINE SCOPE user SESSION 5s SIGNUP (CREATE type::thing('user', $username) SET email = $email, pass = crypto::argon2::generate($pass)) SIGNIN (SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(pass, $pass))`;
-    const [_, [{ scopes }]] = await db.query(/* surql */ `
+	const scope = /* surql */ `DEFINE SCOPE user SESSION 5s SIGNUP (CREATE type::thing('user', $username) SET email = $email, pass = crypto::argon2::generate($pass)) SIGNIN (SELECT * FROM user WHERE email = $email AND crypto::argon2::compare(pass, $pass))`;
+	const [_, [{ scopes }]] = await db.query(/* surql */ `
 		${scope};
 		INFO FOR DB;
   	`);
-    t.is(scopes.user, scope);
+	t.is(scopes.user, scope);
 
-    {
-        const token = await db.signup({
-            namespace: "test",
-            database: "test",
-            scope: "user",
+	{
+		const token = await db.signup({
+			namespace: "test",
+			database: "test",
+			scope: "user",
 
-            username: "john",
-            email: "john.doe@example.com",
-            pass: "password123",
-        });
-        t.is(typeof token, "string");
+			username: 'john',
+			email: "john.doe@example.com",
+			pass: "password123",
+		});
+		t.is(typeof token, 'string');
 
-        const [[user_id]] = await db.query(/* surql */ `$auth`);
-        t.is(user_id, "user:john");
-    }
+		const [[user_id]] = await db.query(/* surql */ `$auth`);
+		t.is(user_id, 'user:john');
+	}
 
-    {
-        const token = await db.signin({
-            namespace: "test",
-            database: "test",
-            scope: "user",
+	{
+		const token = await db.signin({
+			namespace: "test",
+			database: "test",
+			scope: "user",
 
-            email: "john.doe@example.com",
-            pass: "password123",
-        });
-        t.is(typeof token, "string");
+			email: "john.doe@example.com",
+			pass: "password123",
+		});
+		t.is(typeof token, 'string');
 
-        const [[user_id]] = await db.query(/* surql */ `$auth`);
-        t.is(user_id, "user:john");
-    }
+		const [[user_id]] = await db.query(/* surql */ `$auth`);
+		t.is(user_id, 'user:john');
+	}
 });
 
 test("test select method", async (t) => {
-    const db = new Surreal({
-        engines: surrealdbNodeEngines(),
-    });
-    await db.connect("memory");
-    await db.use({ namespace: "test", database: "test" });
+	const db = new Surreal({
+		engines: surrealdbNodeEngines(),
+	});
+	await db.connect("memory");
+	await db.use({ namespace: "test", database: "test" });
 
-    const jason = { id: "person:jason" };
-    const john = { id: "person:john" };
-    const jaime = { id: "person:jaime" };
-    const people = [jaime, jason, john];
+	const jason = { id: "person:jason" };
+	const john = { id: "person:john" };
+	const jaime = { id: "person:jaime" };
+	const people = [jaime, jason, john];
 
-    await db.create(jason.id);
-    await db.create(john.id);
-    await db.create(jaime.id);
+	await db.create(jason.id);
+	await db.create(john.id);
+	await db.create(jaime.id);
 
-    {
-        const res = await db.select("person");
-        t.deepEqual(new Set(res), new Set(people));
-        const person = await db.select("person:jason");
-        t.deepEqual(person, [jason]);
-    }
+	{
+		const res = await db.select("person");
+		t.deepEqual(new Set(res), new Set(people));
+		const person = await db.select("person:jason");
+		t.deepEqual(person, [jason]);
+	}
 });
 
 // test('examples', async t => {
