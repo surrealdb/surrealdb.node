@@ -42,7 +42,8 @@
         "ava": "^5.1.1"
     },
     "dependencies": {
-        "surrealdb.js": "^1.0.0-beta.12"
+        "surrealdb.js": "^1.0.0-beta.12",
+        "typescript": "^5.5.4"
     },
     "peerDependencies": {
         "surrealdb.js": "^1.0.0-beta.12"
@@ -61,7 +62,7 @@
         "test": "npx tsx test.ts",
         "universal": "napi universal",
         "version": "napi version",
-        "ts-compile": "npx tsc --version && pnpx tsc"
+        "ts-compile": "pnpm i typescript && tsc --version && tsc"
     },
     "files": [
         "lib",
