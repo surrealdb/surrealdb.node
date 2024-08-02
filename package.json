@@ -13,7 +13,7 @@
     "main": "index.js",
     "types": "index.d.ts",
     "napi": {
-        "name": "surrealdb.node",
+        "name": "@surrealdb/node",
         "triples": {
             "additional": [
                 "aarch64-apple-darwin",
