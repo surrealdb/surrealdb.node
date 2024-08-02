@@ -39,8 +39,8 @@ It enables SurrealDB to be run in-memory, or to persist data by running on top o
 ## Example usage
 
 ```js
-import { Surreal } from 'surrealdb.js';
-import { surrealdbNodeEngines } from 'surrealdb.node';
+import { Surreal } from 'surrealdb';
+import { surrealdbNodeEngines } from '@surrealdb/node';
 
 // Enable the WebAssembly engines
 const db = new Surreal({

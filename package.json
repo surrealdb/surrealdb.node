@@ -1,6 +1,6 @@
 {
-    "name": "surrealdb.node",
-    "version": "1.0.0-beta.1",
+    "name": "@surrealdb/node",
+    "version": "1.0.0-beta.2",
     "author": {
         "name": "Raphael Darley",
         "email": "raphael.darley@surrealdb.com"
@@ -13,7 +13,7 @@
     "main": "index.js",
     "types": "index.d.ts",
     "napi": {
-        "name": "surrealdb.node",
+        "name": "@surrealdb/node",
         "triples": {
             "additional": [
                 "aarch64-apple-darwin",
@@ -42,11 +42,11 @@
         "ava": "^5.1.1"
     },
     "dependencies": {
-        "surrealdb.js": "^1.0.0-beta.12",
-        "typescript": "^5.5.4"
+        "surrealdb": "^1.0.0-beta.19"
     },
     "peerDependencies": {
-        "surrealdb.js": "^1.0.0-beta.12"
+        "surrealdb": "^1.0.0-beta.12",
+        "typescript": "^5.5.4"
     },
     "ava": {
         "timeout": "3m"
