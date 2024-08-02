@@ -290,7 +290,7 @@ jobs:
               run: ls -R .
               shell: bash
             - name: Test bindings
-              run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim sudo chown -R 1001:127 "/root/.npm" && npm run test
+              run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim npm run test
     test-linux-x64-musl-binding:
         name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
         needs:
