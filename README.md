@@ -28,7 +28,7 @@
     <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img src="https://img.shields.io/badge/youtube-subscribe-fc1c1c.svg?style=flat-square"></a>
 </p>
 
-# surrealdb.node
+# @surrealdb/node
 
 A Node.js engine for the SurrealDB [JavaScript SDK](https://github.com/surrealdb/surrealdb.js).
 
@@ -39,8 +39,8 @@ It enables SurrealDB to be run in-memory, or to persist data by running on top o
 ## Example usage
 
 ```js
-import { Surreal } from 'surrealdb.js';
-import { surrealdbNodeEngines } from 'surrealdb.node';
+import { Surreal } from 'surrealdb';
+import { surrealdbNodeEngines } from '@surrealdb/node';
 
 // Enable the WebAssembly engines
 const db = new Surreal({

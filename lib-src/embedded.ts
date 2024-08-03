@@ -8,7 +8,7 @@ import {
     type RpcRequest,
     type RpcResponse,
     UnexpectedConnectionError,
-} from "surrealdb.js";
+} from "surrealdb";
 
 export function surrealdbNodeEngines(opts?: ConnectionOptions) {
     class NodeEmbeddedEngine extends AbstractEngine {

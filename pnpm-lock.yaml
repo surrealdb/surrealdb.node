@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      surrealdb.js:
-        specifier: ^1.0.0-beta.12
-        version: 1.0.0-beta.12(tslib@2.6.3)(typescript@5.5.4)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
+      surrealdb:
+        specifier: ^1.0.0-beta.19
+        version: 1.0.0-beta.19(tslib@2.6.3)(typescript@5.5.4)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -526,8 +526,8 @@ packages:
     resolution: {integrity: sha512-u1ZpIBCawJnO+0QePsEiOknOfCRq0yERxiAchT0i4li0WHNUJbf0evXXSXOcCAR4M8iMDoajXYmstm/qO81Isw==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  surrealdb.js@1.0.0-beta.12:
-    resolution: {integrity: sha512-spIR6cXOTkB45Hi206afzE/+JdqS2kMe6/qxfcTtdkE4apARCNc5BEgi7o206r0auBRm4yP6pEfm6zXxCpeUsA==}
+  surrealdb@1.0.0-beta.19:
+    resolution: {integrity: sha512-MfUhFTt/H2ppxFW9zs47NR8brwaDCD7M2uYbWpgo9LaRPNDIHk+PN1RgsVH6Z9+NSdefhS53BkOihtclJU19jQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       tslib: ^2.6.3
@@ -1064,7 +1064,7 @@ snapshots:
       serialize-error: 7.0.1
       strip-ansi: 7.1.0
 
-  surrealdb.js@1.0.0-beta.12(tslib@2.6.3)(typescript@5.5.4)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
+  surrealdb@1.0.0-beta.19(tslib@2.6.3)(typescript@5.5.4)(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)):
     dependencies:
       isows: 1.0.4(ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4))
       tslib: 2.6.3
