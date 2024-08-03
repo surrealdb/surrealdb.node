@@ -39,13 +39,14 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@napi-rs/cli": "^2.18.3",
-        "ava": "^5.1.1"
+        "ava": "^5.1.1",
+        "typescript": "^5.5.4"
     },
     "dependencies": {
         "surrealdb": "^1.0.0-beta.19"
     },
     "peerDependencies": {
-        "typescript": "^5.5.4"
+        "surrealdb": "^1.0.0-beta.19"
     },
     "ava": {
         "timeout": "3m"
