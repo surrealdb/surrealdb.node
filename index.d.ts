@@ -1,4 +1,5 @@
-import { ConnectionOptions } from "./lib-src/embedded.js";
+import { ConnectionOptions } from "./lib-src/embedded";
+
 /* tslint:disable */
 /* eslint-disable */
 
