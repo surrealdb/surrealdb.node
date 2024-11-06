@@ -1,6 +1,6 @@
 {
     "name": "@surrealdb/node",
-    "version": "1.0.0-beta.1",
+    "version": "1.0.0-beta.2",
     "author": {
         "name": "Raphael Darley",
         "email": "raphael.darley@surrealdb.com"
