@@ -23,6 +23,8 @@ async function run(endpoint) {
 
     console.log("selecting " + endpoint, await surreal.select("test"));
 
+    console.log("exporting " + endpoint, await surreal.export());
+
     console.log("closing " + endpoint, await surreal.close());
 }
 

@@ -1,22 +1,34 @@
 import { SurrealdbNodeEngine as Sne } from "../index.js";
+
 import {
     AbstractEngine,
     ConnectionStatus,
     ConnectionUnavailable,
     type EngineEvents,
+    Engines,
+    ExportOptions,
     getIncrementalID,
     type RpcRequest,
     type RpcResponse,
     UnexpectedConnectionError,
 } from "surrealdb";
 
-export function surrealdbNodeEngines(opts?: ConnectionOptions) {
+/**
+ * Construct the engines for the SurrealDB Nodejs implementation. This
+ * includes support for `mem` and `surrealkv` protocols.
+ * 
+ * @param opts Configuration options
+ * @returns The engines
+ */
+export function surrealdbNodeEngines(opts?: ConnectionOptions): Engines {
+
     class NodeEmbeddedEngine extends AbstractEngine {
+
         ready: Promise<void> | undefined = undefined;
         reader?: Promise<void>;
         db?: Sne;
 
-        async version(url: URL, timeout: number): Promise<string> {
+        async version(): Promise<string> {
             return Sne.version();
         }
 
@@ -80,6 +92,7 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions) {
             this.db = undefined;
             await this.reader;
             this.reader = undefined;
+			
             if (this.status !== ConnectionStatus.Disconnected) {
                 this.setStatus(ConnectionStatus.Disconnected);
             }
@@ -137,6 +150,11 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions) {
         get connected() {
             return !!this.db;
         }
+
+		export(options?: Partial<ExportOptions>): Promise<string> {
+			return this.db.export(options ? new Uint8Array(this.encodeCbor(options)) : undefined);
+		}
+		
     }
 
     return {

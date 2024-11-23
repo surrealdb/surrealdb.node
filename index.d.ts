@@ -10,4 +10,5 @@ export declare class SurrealdbNodeEngine {
   static connect(endpoint: string, opts?: ConnectionOptions): Promise<SurrealdbNodeEngine>
   free(): Promise<void>
   static version(): string
+  export(config?: Uint8Array | undefined | null): Promise<string>
 }
