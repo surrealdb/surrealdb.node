@@ -160,6 +160,7 @@ export function surrealdbNodeEngines(opts?: ConnectionOptions): Engines {
     return {
         mem: NodeEmbeddedEngine,
         surrealkv: NodeEmbeddedEngine,
+       "surrealkv+versioned": NodeEmbeddedEngine,
     };
 }
 
