@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-surrealdb = { git = "https://github.com/surrealdb/surrealdb", default-features = false, features = ["kv-surrealkv", "kv-mem"] }
+surrealdb = { version = "2.1.1", default-features = false, features = ["kv-surrealkv", "kv-mem"] }
 napi = { version = "2", features = ["async", "serde-json"] }
 napi-derive = "2"
 serde = "1.0.188"

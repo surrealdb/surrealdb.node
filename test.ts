@@ -16,6 +16,8 @@ async function run(endpoint) {
         await surreal.use({ namespace: "test", database: "test" }),
     );
 
+	console.log("version " + await surreal.version());
+
     console.log(
         "creating " + endpoint,
         await surreal.create("test", { val: 42 }),
