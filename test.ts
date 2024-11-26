@@ -16,12 +16,16 @@ async function run(endpoint) {
         await surreal.use({ namespace: "test", database: "test" }),
     );
 
+	console.log("version " + await surreal.version());
+
     console.log(
         "creating " + endpoint,
         await surreal.create("test", { val: 42 }),
     );
 
     console.log("selecting " + endpoint, await surreal.select("test"));
+
+    console.log("exporting " + endpoint, await surreal.export());
 
     console.log("closing " + endpoint, await surreal.close());
 }

@@ -9,7 +9,6 @@ use napi::bindgen_prelude::*;
 use napi::tokio::sync::RwLock;
 use napi_derive::napi;
 
-use once_cell::sync::Lazy;
 use opt::endpoint::Options;
 use serde_json::from_value;
 use serde_json::Value as JsValue;
@@ -17,8 +16,10 @@ use surrealdb::dbs::Session;
 use surrealdb::kvs::Datastore;
 use surrealdb::rpc::format::cbor;
 use surrealdb::rpc::method::Method;
+use surrealdb::kvs::export::Config;
 
 use surrealdb::rpc::{Data, RpcContext};
+use surrealdb::sql::Value;
 use uuid::Uuid;
 
 #[napi]
@@ -139,8 +140,36 @@ impl SurrealdbNodeEngine {
 
     #[napi]
     pub fn version() -> std::result::Result<String, Error> {
-        Ok(SURREALDB_VERSION.clone())
+        Ok(env!("SURREALDB_VERSION").into())
     }
+
+	#[napi]
+	pub async fn export(&self, config: Option<Uint8Array>) -> std::result::Result<String, Error> {
+		let lock = self.0.read().await;
+		let inner = lock.as_ref().unwrap();
+		let (tx, rx) = channel::unbounded();
+
+		match config {
+			Some(config) => {
+				let in_config = cbor::parse_value(config.to_vec()).map_err(err_map)?;
+				let config = Config::try_from(&in_config).map_err(err_map)?;
+
+				inner.kvs.export_with_config(&inner.session, tx, config).await.map_err(err_map)?.await.map_err(err_map)?;
+			}
+			None => {
+				inner.kvs.export(&inner.session, tx).await.map_err(err_map)?.await.map_err(err_map)?;
+			}
+		};
+
+		let mut buffer = Vec::new();
+		while let Ok(item) = rx.try_recv() {
+			buffer.push(item);
+		}
+
+		let result = String::from_utf8(buffer.concat().into()).map_err(err_map)?;
+
+		Ok(result)
+	}
 }
 
 struct SurrealdbNodeEngineInner {
@@ -169,9 +198,9 @@ impl RpcContext for SurrealdbNodeEngineInner {
         &mut self.vars
     }
 
-    fn version_data(&self) -> impl Into<Data> {
-        SURREALDB_VERSION.clone()
-    }
+    fn version_data(&self) -> Data {
+		Value::Strand(format!("surrealdb-{}", env!("SURREALDB_VERSION")).into()).into()
+	}
 
     const LQ_SUPPORT: bool = true;
     fn handle_live(&self, _lqid: &Uuid) -> impl std::future::Future<Output = ()> + Send {
@@ -181,19 +210,3 @@ impl RpcContext for SurrealdbNodeEngineInner {
         async { () }
     }
 }
-
-static LOCK_FILE: &str = include_str!("../Cargo.lock");
-
-pub static SURREALDB_VERSION: Lazy<String> = Lazy::new(|| {
-    let lock: cargo_lock::Lockfile = LOCK_FILE.parse().expect("Failed to parse Cargo.lock");
-    let package = lock
-        .packages
-        .iter()
-        .find(|p| p.name.as_str() == "surrealdb")
-        .expect("Failed to find surrealdb in Cargo.lock");
-
-    format!(
-        "{}.{}.{}",
-        package.version.major, package.version.minor, package.version.patch
-    )
-});
