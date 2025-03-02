@@ -313,3 +313,6 @@ if (!nativeBinding) {
 const { SurrealdbNodeEngine } = nativeBinding
 
 module.exports.SurrealdbNodeEngine = SurrealdbNodeEngine
+
+const { surrealdbNodeEngines } = require('./lib/embedded');
+module.exports.surrealdbNodeEngines = surrealdbNodeEngines;
