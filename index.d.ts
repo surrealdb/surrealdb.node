@@ -1,4 +1,4 @@
-import { ConnectionOptions } from "./lib-src/embedded.js";
+import { ConnectionOptions, surrealdbNodeEngines as embeddedSurrealdbNodeEngines } from "./lib/embedded.js";
 /* tslint:disable */
 /* eslint-disable */
 
@@ -11,3 +11,5 @@ export declare class SurrealdbNodeEngine {
   static version(): string
   export(config?: Uint8Array | undefined | null): Promise<string>
 }
+
+export declare const surrealdbNodeEngines: typeof embeddedSurrealdbNodeEngines;
