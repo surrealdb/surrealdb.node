@@ -104,11 +104,11 @@ jobs:
         name: stable - ${{ matrix.settings.target }} - node@18
         runs-on: ${{ matrix.settings.host }}
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup cache
               uses: Swatinem/rust-cache@v2
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               if: ${{ !matrix.settings.docker }}
               with:
                   node-version: 18
@@ -123,7 +123,7 @@ jobs:
                   toolchain: stable
                   targets: ${{ matrix.settings.target }}
             - name: Cache cargo
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: |
                       ~/.cargo/registry/index/
@@ -147,7 +147,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install
             - name: Setup node x86
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               if: matrix.settings.target == 'i686-pc-windows-msvc'
               with:
                   node-version: 18
@@ -165,7 +165,7 @@ jobs:
               if: ${{ !matrix.settings.docker }}
               shell: bash
             - name: Upload artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: bindings-${{ matrix.settings.target }}
                   path: ${{ env.APP_NAME }}.*.node
@@ -174,7 +174,7 @@ jobs:
     #   runs-on: macos-12
     #   name: Build FreeBSD
     #   steps:
-    #     - uses: actions/checkout@v3
+    #     - uses: actions/checkout@v4
     #     - name: Build
     #       id: build
     #       uses: vmactions/freebsd-vm@v0
@@ -213,7 +213,7 @@ jobs:
     #           rm -rf target
     #           rm -rf .pnpm/cache
     #     - name: Upload artifact
-    #       uses: actions/upload-artifact@v3
+    #       uses: actions/upload-artifact@v4
     #       with:
     #         name: bindings-freebsd
     #         path: ${{ env.APP_NAME }}.*.node
@@ -236,9 +236,9 @@ jobs:
                     - "18"
         runs-on: ${{ matrix.settings.host }}
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node }}
                   check-latest: true
@@ -248,7 +248,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install
             - name: Download artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: bindings-${{ matrix.settings.target }}
                   path: .
@@ -270,9 +270,9 @@ jobs:
                     - "18"
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node }}
                   check-latest: true
@@ -282,7 +282,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install
             - name: Download artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: bindings-x86_64-unknown-linux-gnu
                   path: .
@@ -304,9 +304,9 @@ jobs:
                     - "18"
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node }}
                   check-latest: true
@@ -318,7 +318,7 @@ jobs:
                   pnpm config set supportedArchitectures.libc "musl"
                   pnpm install
             - name: Download artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: bindings-x86_64-unknown-linux-musl
                   path: .
@@ -340,9 +340,9 @@ jobs:
                     - "18"
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Download artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: bindings-aarch64-unknown-linux-gnu
                   path: .
@@ -350,7 +350,7 @@ jobs:
               run: ls -R .
               shell: bash
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 18
                   check-latest: true
@@ -382,9 +382,9 @@ jobs:
     #     - build
     #   runs-on: ubuntu-latest
     #   steps:
-    #     - uses: actions/checkout@v3
+    #     - uses: actions/checkout@v4
     #     - name: Download artifacts
-    #       uses: actions/download-artifact@v3
+    #       uses: actions/download-artifact@v4
     #       with:
     #         name: bindings-aarch64-unknown-linux-musl
     #         path: .
@@ -422,9 +422,9 @@ jobs:
     #         - '18'
     #   runs-on: ubuntu-latest
     #   steps:
-    #     - uses: actions/checkout@v3
+    #     - uses: actions/checkout@v4
     #     - name: Download artifacts
-    #       uses: actions/download-artifact@v3
+    #       uses: actions/download-artifact@v4
     #       with:
     #         name: bindings-armv7-unknown-linux-gnueabihf
     #         path: .
@@ -455,9 +455,9 @@ jobs:
             - build
         runs-on: macos-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 18
                   check-latest: true
@@ -467,14 +467,14 @@ jobs:
             - name: Install dependencies
               run: pnpm install
             - name: Download macOS x64 artifact
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: bindings-x86_64-apple-darwin
                   path: artifacts
             - name: List artifacts
               run: ls /Users/runner/work/surrealdb.node/surrealdb.node/artifacts
             - name: Download macOS arm64 artifact
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: bindings-aarch64-apple-darwin
                   path: artifacts
@@ -483,7 +483,7 @@ jobs:
             - name: Combine binaries
               run: pnpm universal
             - name: Upload artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: bindings-universal-apple-darwin
                   path: ${{ env.APP_NAME }}.*.node
@@ -501,9 +501,9 @@ jobs:
             # - test-linux-arm-gnueabihf-binding
             - universal-macOS
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 18
                   check-latest: true
@@ -513,7 +513,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install
             - name: Download all artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   path: artifacts
             - name: Move artifacts
@@ -539,9 +539,9 @@ jobs:
             # - test-linux-arm-gnueabihf-binding
             - universal-macOS
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 18
                   check-latest: true
@@ -551,7 +551,7 @@ jobs:
             - name: Install dependencies
               run: pnpm install
             - name: Download all artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   path: artifacts
             - name: Move artifacts
