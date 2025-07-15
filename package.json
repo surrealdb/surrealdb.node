@@ -10,8 +10,8 @@
         "url": "https://github.com/surrealdb/surrealdb.node"
     },
     "description": "Node.js driver for SurrealDB",
-    "main": "index.js",
-    "types": "index.d.ts",
+    "main": "lib/embedded.js",
+    "types": "lib/embedded.d.ts",
     "napi": {
         "name": "surrealdb.node",
         "triples": {
