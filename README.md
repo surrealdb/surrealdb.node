@@ -11,11 +11,11 @@
 <br>
 
 <p align="center">
-    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/badge/status-beta-ff00bb.svg?style=flat-square"></a>
+    <a href="https://github.com/surrealdb/surrealdb.js"><img src="https://img.shields.io/badge/status-stable-ff00bb.svg?style=flat-square"></a>
     &nbsp;
     <a href="https://surrealdb.com/docs/integration/libraries/javascript"><img src="https://img.shields.io/badge/docs-view-44cc11.svg?style=flat-square"></a>
     &nbsp;
-    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/npm/v/surrealdb.node?style=flat-square"></a>
+    <a href="https://github.com/surrealdb/surrealdb.node"><img src="https://img.shields.io/npm/v/@surrealdb/node?style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -28,29 +28,10 @@
     <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img src="https://img.shields.io/badge/youtube-subscribe-fc1c1c.svg?style=flat-square"></a>
 </p>
 
-# @surrealdb/node
+# surrealdb.node
 
 A Node.js engine for the SurrealDB [JavaScript SDK](https://github.com/surrealdb/surrealdb.js).
 
-This library is a plugin for the SurrealDB JavaScript SDK, which can be used to run SurrealDB as an embedded database within a Node.js server side environment.
+The code for this engine has been moved into the [SurrealDB Javascript SDK](https://github.com/surrealdb/surrealdb.js) repository.
 
-It enables SurrealDB to be run in-memory, or to persist data by running on top of SurrealKV. It allows for a consistent JavaScript and TypeScript API when using the `surrealdb.js` library by adding support for embedded storage engines (`memory`, `surrealkv`) alongside the remote connection protocols (`http`, `https`, `ws`, `wss`).
-
-## Example usage
-
-```js
-import { Surreal } from 'surrealdb';
-import { surrealdbNodeEngines } from '@surrealdb/node';
-
-// Enable the WebAssembly engines
-const db = new Surreal({
-    engines: surrealdbNodeEngines(),
-});
-
-// Now we can start SurrealDB as an in-memory database
-await db.connect("mem://");
-// Or we can start a persisted SurrealKV database
-await db.connect("surrealkv://demo");
-
-// Now use the JavaScript SDK as normal.
-```
+To embed SurrealDB within Node.js, [view the documentation](https://github.com/surrealdb/surrealdb.js#embedding-surrealdb-in-nodejs-deno-and-bun).
